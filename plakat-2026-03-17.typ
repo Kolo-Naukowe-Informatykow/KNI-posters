@@ -88,7 +88,7 @@
   #align(center)[
     #v(-100pt)
     
-    #image("logo-white.svg", width: 600pt)
+    #image("logoKNI-white.svg", width: 600pt)
 
     #v(-120pt)
 
