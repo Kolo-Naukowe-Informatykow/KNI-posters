@@ -1,0 +1,34 @@
+{
+  "name": "kni-posters",
+  "version": "1.0.0",
+  "description": "KNI posters and video assets built with Typst and Remotion",
+  "private": true,
+  "scripts": {
+    "remotion:studio": "remotion studio src/index.ts",
+    "remotion:render": "remotion render src/index.ts PosterIntro out/poster-intro.mp4",
+    "remotion:still": "remotion still src/index.ts PosterIntro out/poster-intro.png --frame=60"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/6ajmon/KNI-posters.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/6ajmon/KNI-posters/issues"
+  },
+  "homepage": "https://github.com/6ajmon/KNI-posters#readme",
+  "dependencies": {
+    "@remotion/cli": "^4.0.441",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "remotion": "^4.0.441"
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.0",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "typescript": "^6.0.2"
+  }
+}
