@@ -1,24 +1,21 @@
 import {Composition} from "remotion";
-import {PosterIntro, type PosterIntroProps} from "./PosterIntro";
-
-const defaultProps: PosterIntroProps = {
-  title: "KNI",
-  subtitle: "Koło Naukowe Informatyki",
-  date: "2026-03-30"
-};
+import {compositionRegistry} from "./posts/registry";
 
 export const RemotionRoot: React.FC = () => {
   return (
     <>
-      <Composition
-        id="PosterIntro"
-        component={PosterIntro}
-        durationInFrames={180}
-        fps={30}
-        width={1080}
-        height={1920}
-        defaultProps={defaultProps}
-      />
+      {compositionRegistry.map((post) => (
+        <Composition
+          key={post.id}
+          id={post.id}
+          component={post.component}
+          durationInFrames={post.spec.durationInFrames}
+          fps={post.spec.fps}
+          width={post.spec.width}
+          height={post.spec.height}
+          defaultProps={post.defaultProps}
+        />
+      ))}
     </>
   );
 };

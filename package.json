@@ -5,8 +5,9 @@
   "private": true,
   "scripts": {
     "remotion:studio": "remotion studio src/index.ts",
-    "remotion:render": "remotion render src/index.ts PosterIntro out/poster-intro.mp4",
-    "remotion:still": "remotion still src/index.ts PosterIntro out/poster-intro.png --frame=60"
+    "remotion:render": "remotion render src/index.ts StoryMeeting-2026-03-31 out/story-meeting-2026-03-31.mp4",
+    "remotion:render:story-meeting": "remotion render src/index.ts StoryMeeting-2026-03-31 out/story-meeting-2026-03-31.mp4",
+    "remotion:still": "remotion still src/index.ts StoryMeeting-2026-03-31 out/story-meeting-2026-03-31.png --frame=60"
   },
   "repository": {
     "type": "git",
