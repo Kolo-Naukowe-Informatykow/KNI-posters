@@ -1,8 +1,9 @@
 import type {InstagramCompositionDefinition} from "../core/posts/InstagramPostDefinition";
+import {StoryMeeting20260414Story} from "./story-meeting/story-meeting-2026-04-14.story";
 import {StoryMeeting20260331Story} from "./story-meeting/story-meeting-2026-03-31.story";
 
-export const storyRegistry = [new StoryMeeting20260331Story()];
+export const storyRegistry = [new StoryMeeting20260331Story(), new StoryMeeting20260414Story()];
 
-export const compositionRegistry: InstagramCompositionDefinition<Record<string, unknown>>[] = [
+export const compositionRegistry: InstagramCompositionDefinition<any>[] = [
   ...storyRegistry
 ];

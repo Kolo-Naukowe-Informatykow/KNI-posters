@@ -1,0 +1,242 @@
+import type React from "react";
+import {AbsoluteFill, Img, interpolate, spring, useCurrentFrame, useVideoConfig} from "remotion";
+import {OrbitalStarsBackground} from "../../components/backgrounds/OrbitalStarsBackground";
+import logoKniTextWhite from "../../../assets/logoKNI-text-white.svg";
+
+export type StoryMeeting20260414Props = {
+  time: string;
+  dateLabel: string;
+  headline: string;
+  topicLabel: string;
+  topicValue: string;
+  locationLabel: string;
+  locationValue: string;
+  footer: string;
+};
+
+const stars = [
+  {top: "7%", left: "13%", size: 6},
+  {top: "14%", left: "80%", size: 5},
+  {top: "21%", left: "28%", size: 4},
+  {top: "30%", left: "62%", size: 7},
+  {top: "37%", left: "16%", size: 4},
+  {top: "43%", left: "85%", size: 6},
+  {top: "51%", left: "54%", size: 5},
+  {top: "59%", left: "21%", size: 4},
+  {top: "67%", left: "74%", size: 6},
+  {top: "75%", left: "40%", size: 5},
+  {top: "82%", left: "89%", size: 4},
+  {top: "88%", left: "24%", size: 6}
+];
+
+export const StoryMeeting20260414: React.FC<StoryMeeting20260414Props> = ({
+  time,
+  dateLabel,
+  headline,
+  topicLabel,
+  topicValue,
+  locationLabel,
+  locationValue,
+  footer
+}) => {
+  const frame = useCurrentFrame();
+  const {fps} = useVideoConfig();
+  const timeline = frame / fps;
+
+  const intro = spring({
+    frame,
+    fps,
+    config: {
+      damping: 170,
+      stiffness: 125
+    }
+  });
+
+  const fade = interpolate(frame, [0, 18], [0, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp"
+  });
+
+  const infoSlide = interpolate(frame, [8, 34], [36, 0], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp"
+  });
+
+  const bottomSlide = interpolate(frame, [12, 38], [50, 0], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp"
+  });
+
+  const radialX = 15 + Math.sin(timeline * 0.45) * 8;
+  const radialY = 20 + Math.cos(timeline * 0.32) * 7;
+  const tint = (Math.sin(timeline * 0.4) + 1) / 2;
+  const violetLightness = 12 + tint * 5;
+  const navyLightness = 11 + tint * 4;
+  const deepLightness = 7 + tint * 2;
+
+  const animatedBackground = `radial-gradient(circle at ${radialX}% ${radialY}%, hsl(252 55% ${violetLightness}%) 0%, hsl(218 62% ${navyLightness}%) 48%, hsl(225 72% ${deepLightness}%) 100%)`;
+
+  return (
+    <AbsoluteFill
+      style={{
+        background: animatedBackground,
+        color: "#ffffff",
+        fontFamily: "Segoe UI, Tahoma, Geneva, Verdana, sans-serif",
+        padding: "88px 90px 96px",
+        overflow: "hidden"
+      }}
+    >
+      <OrbitalStarsBackground stars={stars} />
+
+      <div
+        style={{display: "flex", flexDirection: "column", height: "100%", justifyContent: "space-between"}}
+      >
+        <div style={{display: "flex", justifyContent: "center"}}>
+          <Img
+            src={logoKniTextWhite}
+            style={{
+              width: 620,
+              maxWidth: "100%",
+              opacity: fade,
+              transform: `scale(${0.92 + intro * 0.08})`
+            }}
+          />
+        </div>
+
+        <div
+          style={{
+            textAlign: "center",
+            transform: `translateY(${infoSlide}px)`,
+            opacity: fade
+          }}
+        >
+          <p
+            style={{
+              margin: 0,
+              fontSize: 168,
+              fontWeight: 800,
+              lineHeight: 0.95,
+              color: "#ffdbed",
+              letterSpacing: 1
+            }}
+          >
+            {time}
+          </p>
+          <p
+            style={{
+              marginTop: 38,
+              marginBottom: 0,
+              fontSize: 62,
+              fontWeight: 700,
+              lineHeight: 1.15
+            }}
+          >
+            {headline}
+          </p>
+          <p
+            style={{
+              marginTop: 12,
+              marginBottom: 0,
+              fontSize: 56,
+              fontWeight: 600,
+              lineHeight: 1.2,
+              color: "#f3f6ff"
+            }}
+          >
+            {dateLabel}
+          </p>
+        </div>
+
+        <div
+          style={{
+            opacity: fade,
+            transform: `translateY(${bottomSlide}px)`
+          }}
+        >
+          <div
+            style={{
+              width: 660,
+              maxWidth: "100%",
+              height: 4,
+              margin: "0 auto 56px",
+              borderRadius: 999,
+              background: "#ffdbed"
+            }}
+          />
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1.15fr 2.4fr",
+              columnGap: 24,
+              alignItems: "start"
+            }}
+          >
+            <p
+              style={{
+                margin: 0,
+                fontSize: 56,
+                fontWeight: 600,
+                color: "#e3e9ff"
+              }}
+            >
+              {topicLabel}
+            </p>
+            <p
+              style={{
+                margin: 0,
+                fontSize: 56,
+                lineHeight: 1.2,
+                fontWeight: 700,
+                color: "#ffdbed"
+              }}
+            >
+              {topicValue}
+            </p>
+          </div>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1.15fr 2.4fr",
+              columnGap: 24,
+              alignItems: "start",
+              marginTop: 28
+            }}
+          >
+            <p
+              style={{
+                margin: 0,
+                fontSize: 56,
+                fontWeight: 600,
+                color: "#e3e9ff"
+              }}
+            >
+              {locationLabel}
+            </p>
+            <p
+              style={{
+                margin: 0,
+                fontSize: 56,
+                lineHeight: 1.2,
+                fontWeight: 700,
+                color: "#ffdbed"
+              }}
+            >
+              {locationValue}
+            </p>
+          </div>
+          <p
+            style={{
+              marginTop: 88,
+              marginBottom: 0,
+              textAlign: "center",
+              fontSize: 64,
+              fontWeight: 700
+            }}
+          >
+            {footer}
+          </p>
+        </div>
+      </div>
+    </AbsoluteFill>
+  );
+};
