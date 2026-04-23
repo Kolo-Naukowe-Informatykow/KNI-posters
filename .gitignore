@@ -17,3 +17,6 @@ pnpm-debug.log*
 *.jpg
 *.mp4
 *.mov
+
+!assets/TFNiS2026/
+!assets/TFNiS2026/**
