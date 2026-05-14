@@ -12,6 +12,8 @@ export class StoryMeeting20260421Story extends InstagramStoryDefinition<StoryMee
     headline: "jutro spotkanie koła!",
     locationLabel: "gdzie?",
     locationValue: "Wydział Matematyki\ni Informatyki, sala L9",
-    footer: "widzimy się!"
+    footer: "widzimy się!",
+    backgroundMotionIntensity: 1.9,
+    backgroundTwinkleIntensity: 1.45
   };
 }
