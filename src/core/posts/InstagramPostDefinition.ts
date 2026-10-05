@@ -21,6 +21,9 @@ export abstract class InstagramCompositionDefinition<TProps extends Record<strin
 
   public abstract readonly defaultProps: TProps;
 
+  /** Gotowy do wklejenia opis (caption) publikowany razem z materialem. */
+  public readonly caption?: string;
+
   public readonly spec: InstagramCompositionSpec = {
     width: 1080,
     height: 1920,

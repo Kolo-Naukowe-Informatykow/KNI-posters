@@ -1,5 +1,9 @@
 # Instrukcje do tworzenia plakatów KNI
 
+> UWAGA: to dokumentacja **legacy**. Nowe materialy tworzymy w Remotion
+> (patrz `AGENTS.md` oraz `.github/instructions/remotion-instagram.instructions.md`).
+> Nie rozwijaj folderu `typst/` i nie twórz nowych materialow w Typst.
+
 ## Kontekst
 
 Plakaty tworzone są w **Typst** na potrzeby Instagram Stories Koła Naukowego Informatyków.

@@ -16,7 +16,7 @@ export type StoryMeetingTemplateProps = {
   backgroundTwinkleIntensity?: number;
 };
 
-const stars = [
+export const meetingStars = [
   {top: "8%", left: "12%", size: 6},
   {top: "15%", left: "78%", size: 5},
   {top: "22%", left: "30%", size: 4},
@@ -92,7 +92,7 @@ export const StoryMeetingTemplate: React.FC<StoryMeetingTemplateProps> = ({
       }}
     >
       <OrbitalStarsBackground
-        stars={stars}
+        stars={meetingStars}
         motionIntensity={backgroundMotionIntensity}
         twinkleIntensity={backgroundTwinkleIntensity}
       />
