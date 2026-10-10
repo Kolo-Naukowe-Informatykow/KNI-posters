@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="pl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>KNI posters — generator materiałów</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <img class="logo" src="/assets/logoKNI-text-white.svg" alt="Koło Naukowe Informatyków" />
+      <div class="status" id="status">Łączę z serwerem…</div>
+    </header>
+
+    <main>
+      <section class="card">
+        <h1>Generator materiałów KNI</h1>
+        <p class="muted">
+          Wybierz kompozycję bazową, nadpisz treść i wyrenderuj materiał (story 9:16 albo post). Pola wypełniają się
+          treścią kompozycji bazowej — puste pole usuwa dany tekst z materiału.
+        </p>
+
+        <label class="field">
+          <span>Kompozycja bazowa</span>
+          <select id="composition"></select>
+        </label>
+        <div class="meta" id="composition-meta"></div>
+      </section>
+
+      <section class="card">
+        <h2>Treść materiału</h2>
+        <div id="form" class="form"></div>
+
+        <details id="advanced-wrapper" class="advanced">
+          <summary>Zaawansowane (tło, klatka podglądu)</summary>
+          <div id="advanced" class="form"></div>
+        </details>
+
+        <div class="actions">
+          <button type="button" id="preview" class="primary">Podgląd klatki</button>
+          <button type="button" id="still">Renderuj PNG</button>
+          <button type="button" id="video">Renderuj MP4</button>
+        </div>
+        <p class="muted small">
+          Podgląd: PNG w skali 0,4 (szybki). PNG: pełna rozdzielczość, jedna klatka. MP4: cały materiał (może potrwać
+          kilka minut na serwer — zadania lecą pojedynczo, w kolejce).
+        </p>
+      </section>
+
+      <section class="card">
+        <h2>Zadania i pliki</h2>
+        <div id="jobs" class="jobs">
+          <p class="muted">Brak zadań.</p>
+        </div>
+      </section>
+    </main>
+
+    <script src="/app.js"></script>
+  </body>
+</html>

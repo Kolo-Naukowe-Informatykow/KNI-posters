@@ -1,0 +1,21 @@
+node_modules
+.git
+.github
+.env
+.env.*
+*.log
+
+# wyniki i cache renderu (na serwerze to wolumen /srv/kni-posters/out)
+out
+.remotion
+
+# materialy zrodlowe i legacy - nie sa potrzebne w obrazie
+typst
+*.pdf
+*.png
+*.jpg
+*.mp4
+*.mov
+
+!assets/TFNiS2026/
+!assets/TFNiS2026/**

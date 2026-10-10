@@ -12,7 +12,10 @@
     "remotion:render:story-meeting-2026-10-06": "remotion render src/index.ts StoryMeeting-2026-10-06 out/story-meeting-2026-10-06.mp4",
     "remotion:still:story-meeting-2026-10-06": "remotion still src/index.ts StoryMeeting-2026-10-06 out/story-meeting-2026-10-06.png --frame=90",
     "remotion:render:post-spotkanie-organizacyjne-2026-10-06": "remotion render src/index.ts PostSpotkanieOrganizacyjne-2026-10-06 out/post-spotkanie-organizacyjne-2026-10-06.mp4",
-    "remotion:still:post-spotkanie-organizacyjne-2026-10-06": "remotion still src/index.ts PostSpotkanieOrganizacyjne-2026-10-06 out/post-spotkanie-organizacyjne-2026-10-06.png --frame=40"
+    "remotion:still:post-spotkanie-organizacyjne-2026-10-06": "remotion still src/index.ts PostSpotkanieOrganizacyjne-2026-10-06 out/post-spotkanie-organizacyjne-2026-10-06.png --frame=40",
+    "serve": "node server/index.mjs",
+    "browser:ensure": "node scripts/ensure-browser.mjs",
+    "typecheck": "tsc --noEmit"
   },
   "repository": {
     "type": "git",
@@ -26,7 +29,9 @@
   },
   "homepage": "https://github.com/6ajmon/KNI-posters#readme",
   "dependencies": {
+    "@remotion/bundler": "^4.0.441",
     "@remotion/cli": "^4.0.441",
+    "@remotion/renderer": "^4.0.441",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "remotion": "^4.0.441"

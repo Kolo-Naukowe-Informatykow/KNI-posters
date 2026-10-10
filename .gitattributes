@@ -1,2 +1,11 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# Pliki czytane/wykonywane na Linuksie (kontener, skrypty wdrożeniowe) - zawsze LF
+Dockerfile text eol=lf
+.dockerignore text eol=lf
+*.sh text eol=lf
+*.mjs text eol=lf
+*.yml text eol=lf
+server/** text eol=lf
+deploy/** text eol=lf

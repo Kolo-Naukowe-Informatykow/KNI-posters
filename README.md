@@ -98,4 +98,33 @@ Wspolne elementy pochodza z `src/posts/story-meeting/story-meeting-template.comp
 - `src/posts/story-meeting/story-meeting-template.component.tsx`
 - `remotion.config.ts`
 
+## Web UI (generator materialow)
+
+`server/` to mini-aplikacja (Node, bez zaleznosci poza Remotion) wystawiajaca formularz:
+wybierasz kompozycje bazowa, nadpisujesz teksty i renderujesz podglad (PNG 0,4x), PNG
+albo MP4. Zadania leca pojedynczo w kolejce, wyniki laduja w `out/` (w kontenerze na
+wolumenie), historia w `out/jobs.json`.
+
+Uruchomienie lokalne:
+
+```bash
+npm install
+npm run browser:ensure   # pobiera Chrome Headless Shell do node_modules/.remotion
+npm run serve            # http://127.0.0.1:8083
+```
+
+Zmienne srodowiskowe: `PORT` (domyslnie 8083), `HOST` (0.0.0.0), `OUT_DIR`
+(domyslnie `./out`), `REMOTION_CONCURRENCY` (domyslnie auto = liczba rdzeni).
+
+API: `GET /api/health`, `GET /api/compositions`, `GET|POST /api/jobs`,
+`GET /api/jobs/<id>`, `GET /api/jobs/<id>/log`, `GET /api/jobs/<id>/file`,
+`DELETE /api/jobs/<id>` (anuluj/usun).
+
+### Deploy na serwer
+
+Wdrozenie: `/srv/kni-posters` (compose, `.env`, `deploy.sh`, `out/`) + `app/` z klonem
+repo; kontener `kni-posters` slucha na `127.0.0.1:8083`, na swiat idzie przez Tailscale
+Serve `:8453`. Push na `main` uruchamia `.github/workflows/deploy.yml`. Wzorzec compose:
+`deploy/docker-compose.example.yml`. Dokumentacja serwera:
+https://github.com/6ajmon/docs (`docs/02-stacki-docker.md`).
 

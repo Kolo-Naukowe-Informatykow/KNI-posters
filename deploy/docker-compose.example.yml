@@ -1,0 +1,49 @@
+# Wzorzec /srv/kni-posters/docker-compose.yml na serwer (kopia robocza - zrodlo prawdy
+# jest na serwerze, w /srv/kni-posters/docker-compose.yml).
+#
+# Port 8083 na hoscie tylko na 127.0.0.1; na swiat wystawia Tailscale Serve:
+#   tailscale serve --bg --https=8453 http://127.0.0.1:8083
+
+services:
+  kni-posters:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    image: kni-posters:local
+    container_name: kni-posters
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      - TZ=Europe/Warsaw
+      - PORT=8083
+      - OUT_DIR=/app/out
+      # 4 rdzenie w sumie (CPU) - zostawiamy zapas dla inne serwisy
+      - REMOTION_CONCURRENCY=2
+    ports:
+      - "127.0.0.1:8083:8083"
+    volumes:
+      # wyniki renderow, cache bundla i historia zadan (jobs.json)
+      - ./out:/app/out
+    read_only: true
+    tmpfs:
+      - /tmp:size=1g
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:8083/api/health').then((r)=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
