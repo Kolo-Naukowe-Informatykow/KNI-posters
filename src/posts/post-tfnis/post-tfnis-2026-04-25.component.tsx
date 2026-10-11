@@ -1,4 +1,5 @@
 import {AbsoluteFill, Img, interpolate, useCurrentFrame, useVideoConfig} from "remotion";
+import {KNI_FONT_FAMILY} from "../../core/fonts/kniFonts";
 import logoKniWhite from "../../../assets/logoKNI-white.svg";
 import logoTfnis from "../../../assets/TFNiS2026/TFNiS-logo-text.png";
 
@@ -64,7 +65,7 @@ export const PostTfnis20260425: React.FC<PostTfnis20260425Props> = ({dateTimeLab
       style={{
         background: "#0f0f0f",
         color: "#ffffff",
-        fontFamily: "Trebuchet MS, Segoe UI, sans-serif",
+        fontFamily: KNI_FONT_FAMILY,
         overflow: "hidden"
       }}
     >

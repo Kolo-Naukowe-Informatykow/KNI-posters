@@ -89,11 +89,25 @@ Materialy o spotkaniach trzymaja jeden klimat: ciemny gradient, gwiazdy
 Wspolne elementy pochodza z `src/posts/story-meeting/story-meeting-template.component.tsx`
 (`StoryMeetingTemplateProps`, `meetingStars`).
 
+## Czcionki
+
+Czcionki sa czescia repo (`public/fonts/`) i wczytuje je `src/core/fonts/kniFonts.ts`.
+Dzieki temu render wyglada identycznie lokalnie (Windows) i na serwerze — kontener
+Linux nie ma czcionek Segoe UI ani Trebuchet MS.
+
+- `public/fonts/selawik-*.woff2` — Selawik (SIL OFL 1.1, licencja w `public/fonts/LICENSE.txt`),
+  metrycznie zgodny z Segoe UI, wiec uklad i zawijanie tekstu nie zmieniaja sie.
+- Komponenty ustawiaja `fontFamily: KNI_FONT_FAMILY`; nazw czcionek systemowych nie wpisujemy.
+- `delayRender` w `kniFonts.ts` wstrzymuje render, az pliki sie wczytaja (brak cichego
+  zejscia na czcionke zapasowa).
+- Nowy katalog `public/` jest kopiowany do obrazu w `Dockerfile` (`COPY public ./public`).
+
 ## Glowne pliki Remotion
 
 - `src/index.ts`
 - `src/Root.tsx`
 - `src/core/posts/InstagramPostDefinition.ts`
+- `src/core/fonts/kniFonts.ts`
 - `src/posts/registry.ts`
 - `src/posts/story-meeting/story-meeting-template.component.tsx`
 - `remotion.config.ts`

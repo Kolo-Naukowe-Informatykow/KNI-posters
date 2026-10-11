@@ -24,6 +24,8 @@ Folder `typst/` jest legacy i nie powinien byc rozwijany.
 7. Opis publikacyjny trzymaj w polu `caption` definicji oraz w pliku `.opis.md`.
 8. Zdjecia sa opcjonalne — post/story tekstowy w stylistyce story jest OK.
    Gdy material ma zdjecia, `slides[].imageSrc` moze byc opcjonalne (placeholder), zeby renderowal sie przed ich dodaniem.
+9. Czcionki ustawiaj przez `KNI_FONT_FAMILY` z `src/core/fonts/kniFonts.ts` (pliki w `public/fonts/`).
+   Nie wpisuj nazw czcionek systemowych — na serwerze Linux ich nie ma i render wychodzi inny niz lokalnie.
 
 ## Wspolna stylistyka story i post
 
@@ -54,6 +56,7 @@ npx remotion render src/index.ts <ID> out/<nazwa>.mp4
 - Ciemne tlo, jasny tekst, akcent `#6c63ff`.
 - Minimalizm i hierarchia informacji sa wazniejsze niz ozdobniki.
 - Malo tekstu, duze rozmiary, wysoki kontrast.
+- Czcionka: `KNI_FONT_FAMILY` (Selawik z repo, metrycznie zgodny z Segoe UI).
 - Brak emotek i brak formalnego tonu.
 
 ## Jakosciowe warunki akceptacji

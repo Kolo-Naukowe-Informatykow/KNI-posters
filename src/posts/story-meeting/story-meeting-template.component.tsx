@@ -1,6 +1,7 @@
 import type React from "react";
 import {AbsoluteFill, Img, interpolate, spring, useCurrentFrame, useVideoConfig} from "remotion";
 import {OrbitalStarsBackground} from "../../components/backgrounds/OrbitalStarsBackground";
+import {KNI_FONT_FAMILY} from "../../core/fonts/kniFonts";
 import logoKniTextWhite from "../../../assets/logoKNI-text-white.svg";
 
 export type StoryMeetingTemplateProps = {
@@ -86,7 +87,7 @@ export const StoryMeetingTemplate: React.FC<StoryMeetingTemplateProps> = ({
       style={{
         background: animatedBackground,
         color: "#ffffff",
-        fontFamily: "Segoe UI, Tahoma, Geneva, Verdana, sans-serif",
+        fontFamily: KNI_FONT_FAMILY,
         padding: "88px 90px 96px",
         overflow: "hidden"
       }}

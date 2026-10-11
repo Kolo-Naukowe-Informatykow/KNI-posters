@@ -1,6 +1,7 @@
 import type React from "react";
 import {AbsoluteFill, Img, interpolate, spring, useCurrentFrame, useVideoConfig} from "remotion";
 import {OrbitalStarsBackground} from "../../components/backgrounds/OrbitalStarsBackground";
+import {KNI_FONT_FAMILY} from "../../core/fonts/kniFonts";
 import {meetingStars, type StoryMeetingTemplateProps} from "../story-meeting/story-meeting-template.component";
 import logoKniTextWhite from "../../../assets/logoKNI-text-white.svg";
 
@@ -61,7 +62,7 @@ export const PostSpotkanieOrganizacyjne20261006: React.FC<PostSpotkanieOrganizac
       style={{
         background: animatedBackground,
         color: "#ffffff",
-        fontFamily: "Segoe UI, Tahoma, Geneva, Verdana, sans-serif",
+        fontFamily: KNI_FONT_FAMILY,
         padding: "72px 84px 80px",
         overflow: "hidden"
       }}

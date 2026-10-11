@@ -84,6 +84,10 @@ Ten dokument definiuje standard tworzenia nowych materialow na Instagram dla Kol
   - `logoKNI-white.svg`
 - Zachowuj proporcje logo; nie rozciagaj i nie deformuj.
 - Zdjecia ze spotkan na chwile obecna trzymaj w `assets/meetings/<rrrr-mm-dd>/`.
+- Czcionki trzymaj w `public/fonts/` i ustawiaj przez `KNI_FONT_FAMILY`
+  z `src/core/fonts/kniFonts.ts` (Selawik, metrycznie zgodny z Segoe UI).
+  Nazw czcionek systemowych (`Segoe UI`, `Trebuchet MS`) nie wpisuj w komponentach —
+  kontener na serwerze ich nie ma i render wychodzi inny niz lokalnie.
 
 ## 8. Definicja "done"
 
@@ -109,3 +113,4 @@ npx remotion render src/index.ts <ID> out/<nazwa>.mp4
 - Nie wracaj do workflow Typst przy nowych materialach.
 - Nie zmieniaj globalnie stylu calego repo bez potrzeby.
 - Nie usuwaj istniejacych plikow legacy bez wyraznej prozby.
+- Nie wpisuj nazw czcionek systemowych w komponentach — uzywaj `KNI_FONT_FAMILY`.

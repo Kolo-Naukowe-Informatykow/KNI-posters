@@ -10,7 +10,8 @@ RUN npm ci --omit=dev
 
 FROM node:22-bookworm-slim AS runtime
 
-# Zaleznosci Chrome Headless Shell + fonty z polskimi znakami (DejaVu/Liberation)
+# Zaleznosci Chrome Headless Shell + fontconfig i czcionki systemowe jako fallback
+# dla glifow spoza czcionek dolaczonych do repo (public/fonts).
 RUN apt-get update && apt-get install -y --no-install-recommends \
       libnss3 \
       libdbus-1-3 \
@@ -28,6 +29,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
       libcairo2 \
       libpango-1.0-0 \
       libpangocairo-1.0-0 \
+      fontconfig \
       fonts-dejavu-core \
       fonts-liberation \
   && rm -rf /var/lib/apt/lists/*
@@ -39,6 +41,7 @@ COPY package.json package-lock.json ./
 COPY tsconfig.json remotion.config.ts ./
 COPY src ./src
 COPY assets ./assets
+COPY public ./public
 COPY server ./server
 COPY scripts ./scripts
 
