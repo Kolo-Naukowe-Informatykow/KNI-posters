@@ -29,8 +29,12 @@ export const clampShapeIndex = (value: unknown): number => {
   return Math.min(Math.max(Math.trunc(parsed), 0), MOSAIC_TILES - 1);
 };
 
-/** Indeks następnego kafelka (po 9 wraca do 0). */
-export const nextShapeIndex = (value: unknown): number => (clampShapeIndex(value) + 1) % MOSAIC_TILES;
+/**
+ * Indeks następnego kafelka. Posty publikujemy od najstarszego, a Instagram dokłada nowe
+ * przed starymi, więc pierwszy post trafia w ostatnią komórkę siatki (8) i numeracja leci w dół.
+ */
+export const nextShapeIndex = (value: unknown): number =>
+  (clampShapeIndex(value) + MOSAIC_TILES - 1) % MOSAIC_TILES;
 
 export const tileOf = (shapeIndex: unknown): MosaicTile => {
   const index = clampShapeIndex(shapeIndex);

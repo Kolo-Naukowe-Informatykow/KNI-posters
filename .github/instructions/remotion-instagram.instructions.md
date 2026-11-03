@@ -21,7 +21,8 @@ Stories, animacje i foldery `typst/` sa legacy — nie rozwijaj ich.
    Nie wpisuj daty jako gotowego tekstu.
 6. Tlo wybieraj przez `seed`; generator ukladu slonecznego trzymaj w `src/core/mosaic/solarSystem.ts`,
    a mape kafelkow w `src/core/mosaic/mosaic.ts`. Kazdy post ma `shapeIndex` 0-8 — 9 kafelkow tworzy
-   jeden obraz w siatce Instagrama, wiec w jednej serii nie zmieniaj `seed`.
+   jeden obraz w siatce Instagrama, wiec w jednej serii nie zmieniaj `seed`. Numeracja postow idzie
+   od 9 (najstarszy, `shapeIndex` 8) do 1 (`shapeIndex` 0), wiec kolejny kafelek to `shapeIndex - 1`.
 7. Uklad rysuj w jednych wspolnych wspolrzednych mozaiki i przesuwaj tylko `viewBox` —
    zadnych gradientow ani winiet liczonych per kafelek (na styku bylby szew).
 7. Preferuj logo z `assets/` zamiast dodawania nowych wariantow.

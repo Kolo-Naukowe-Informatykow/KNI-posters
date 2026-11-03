@@ -32,6 +32,8 @@ Ten dokument definiuje standard tworzenia nowych materialow na Instagram dla Kol
 - Dane tekstowe i warianty przekazuj przez `defaultProps` i silnie typowane propsy.
 - Kazdy post ma `shapeIndex` (0-8) — numer kafelka ukladu 3x3 z `src/core/mosaic/mosaic.ts`.
   9 postow tworzy jeden obraz, wiec w jednej serii nie zmieniaj `seed` ani geometrii ukladu.
+- Kolejnosc publikacji idzie od najstarszego posta: numer 9 to `shapeIndex` 8 (prawy dolny rog
+  siatki), potem 8, 7, ... az do 1 (`shapeIndex` 0). Generator sam podpowiada nastepny kafelek w dol.
 - `id` kompozycji musi byc unikalny i zgodny z nazwa pliku (np. `PostSpotkanieBase`).
 
 ### 3b. Opis (caption) materialu

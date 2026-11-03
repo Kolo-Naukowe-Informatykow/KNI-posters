@@ -27,7 +27,7 @@ const LABELS = {
 };
 
 const HINTS = {
-  shapeIndex: "9 kafelków tworzy jeden układ — generator podpowiada kolejny",
+  shapeIndex: "9 kafelków tworzy jeden układ — generator podpowiada kolejny (9, 8, ... 1)",
   seed: "Ten sam seed = to samo tło; można wrócić do poprzednich",
   dateISO: "Data z kalendarza trafia na plakat jako np. 10 listopada 2026",
   time: "np. 18:00",

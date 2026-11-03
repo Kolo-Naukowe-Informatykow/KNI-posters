@@ -136,6 +136,8 @@ Pola formularza:
 
 - **Kafelek układu** — siatka 3x3. 9 postów tworzy jeden obraz w siatce Instagrama; generator
   pamięta ostatnio wygenerowany kafelek (`out/ui-state.json`) i domyślnie podpowiada następny.
+  Numeracja idzie od 9 do 1: najstarszy post to 9 i trafia w prawy dolny róg siatki, a kolejne
+  posty (8, 7, ... 1) dokładają się przed nim — dlatego generator schodzi z kafelka 8 do 0.
 - **Ziarno tła** — liczba, z której generator buduje układ słoneczny. Przycisk **Nowe tło**
   losuje nowy seed (po 9 kafelkach masz świeże tło), a **Wstecz** wraca do poprzedniego.
   Historia seedów jest zapisana w `out/ui-state.json`, więc działa też po restarcie.

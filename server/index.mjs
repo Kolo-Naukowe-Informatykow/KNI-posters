@@ -57,10 +57,13 @@ const lastShapeIndex = () => {
   const value = Number(uiState.read().lastShapeIndex);
   return Number.isInteger(value) && value >= 0 && value < SHAPE_TILES ? value : null;
 };
-/** Następny kafelek układu: po zapamiętanym indeksie, a bez historii od 0. */
+/**
+ * Następny kafelek układu. Publikujemy od najstarszego posta, a Instagram dokłada nowe przed
+ * starszymi, więc startujemy od ostatniej komórki siatki (8) i schodzimy w dół: 8, 7, ... 0.
+ */
 const nextShapeIndex = () => {
   const last = lastShapeIndex();
-  return last === null ? 0 : (last + 1) % SHAPE_TILES;
+  return last === null ? SHAPE_TILES - 1 : (last + SHAPE_TILES - 1) % SHAPE_TILES;
 };
 
 const currentSeed = () => {

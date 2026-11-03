@@ -186,7 +186,7 @@ const buildField = (field, container, advanced) => {
         button.classList.toggle("active", index === active);
         button.setAttribute("aria-pressed", String(index === active));
       });
-      preview.textContent = `Kafelek ${active + 1} z ${count}`;
+      preview.textContent = `Post ${active + 1} z ${count}`;
     };
 
     for (let index = 0; index < count; index += 1) {
@@ -428,10 +428,10 @@ const submitJob = async (kind) => {
       state.currentSeed = payload.currentSeed;
       state.seeds = Array.isArray(payload.seeds) ? payload.seeds : state.seeds;
     }
-    if (Number.isInteger(renderedShape) && renderedShape === 8) {
+    await refresh();
+    if (Number.isInteger(renderedShape) && renderedShape === 0) {
       setStatus("Układ gotowy (9/9) — możesz wylosować nowe tło", "ok");
     }
-    await refresh();
   } catch (error) {
     setStatus(`Nie udało się zlecić renderu: ${error.message}`, "error");
   } finally {
@@ -453,7 +453,7 @@ const applyShapeSuggestion = () => {
     });
   }
   const hint = input.parentElement?.querySelector(".hint");
-  if (hint) hint.textContent = `Kafelek ${suggestion + 1} z ${grid?.children.length ?? 9}`;
+  if (hint) hint.textContent = `Post ${suggestion + 1} z ${grid?.children.length ?? 9}`;
 };
 
 const jobActions = (job) => {
