@@ -4,7 +4,7 @@ import {OrbitalStarsBackground} from "../../components/backgrounds/OrbitalStarsB
 import {KNI_FONT_FAMILY} from "../../core/fonts/kniFonts";
 import logoKniTextWhite from "../../../assets/logoKNI-text-white.svg";
 
-export type StoryMeetingTemplateProps = {
+export type StoryBaseTemplateProps = {
   time: string;
   dateLabel: string;
   headline: string;
@@ -17,7 +17,7 @@ export type StoryMeetingTemplateProps = {
   backgroundTwinkleIntensity?: number;
 };
 
-export const meetingStars = [
+export const storyStars = [
   {top: "8%", left: "12%", size: 6},
   {top: "15%", left: "78%", size: 5},
   {top: "22%", left: "30%", size: 4},
@@ -32,7 +32,7 @@ export const meetingStars = [
   {top: "86%", left: "24%", size: 6}
 ];
 
-export const StoryMeetingTemplate: React.FC<StoryMeetingTemplateProps> = ({
+export const StoryBaseTemplate: React.FC<StoryBaseTemplateProps> = ({
   time,
   dateLabel,
   headline,
@@ -93,7 +93,7 @@ export const StoryMeetingTemplate: React.FC<StoryMeetingTemplateProps> = ({
       }}
     >
       <OrbitalStarsBackground
-        stars={meetingStars}
+        stars={storyStars}
         motionIntensity={backgroundMotionIntensity}
         twinkleIntensity={backgroundTwinkleIntensity}
       />

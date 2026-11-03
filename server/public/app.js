@@ -13,6 +13,21 @@ const STATUS_LABELS = {
 };
 const POLL_ACTIVE_MS = 1500;
 const POLL_IDLE_MS = 8000;
+const PREFERRED_COMPOSITION_ID = "PostSpotkanieBase";
+const PL_MONTHS = [
+  "stycznia",
+  "lutego",
+  "marca",
+  "kwietnia",
+  "maja",
+  "czerwca",
+  "lipca",
+  "sierpnia",
+  "września",
+  "października",
+  "listopada",
+  "grudnia"
+];
 
 const state = {
   composition: null,
@@ -20,7 +35,10 @@ const state = {
   logs: new Map(),
   openLogs: new Set(),
   cards: new Map(),
-  timer: null
+  timer: null,
+  shapeIndexSuggestion: null,
+  currentSeed: null,
+  seeds: []
 };
 
 const element = (id) => document.getElementById(id);
@@ -36,6 +54,12 @@ const api = async (path, options) => {
   return payload;
 };
 
+const jsonPost = (body) => ({
+  method: "POST",
+  headers: {"content-type": "application/json"},
+  body: JSON.stringify(body)
+});
+
 const setStatus = (text, className = "") => {
   const node = element("status");
   node.textContent = text;
@@ -50,9 +74,30 @@ const formatSize = (bytes) => {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 };
 
+const toISODate = (date) =>
+  `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+
+/** Najbliższy wtorek (dziś, jeśli dziś jest wtorek) — domyślna data postu. */
+const nextTuesdayISO = () => {
+  const date = new Date();
+  date.setHours(12, 0, 0, 0);
+  date.setDate(date.getDate() + ((2 - date.getDay() + 7) % 7));
+  return toISODate(date);
+};
+
+/** "2026-10-03" -> "3 października 2026" — tak samo jak w komponencie postu. */
+const formatPlDate = (iso) => {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso ?? "");
+  if (!match) return iso ?? "";
+  const month = PL_MONTHS[Number(match[2]) - 1];
+  return month ? `${Number(match[3])} ${month} ${match[1]}` : iso;
+};
+
+const isStaticComposition = () => (state.composition?.durationInFrames ?? 0) <= 1;
+
 const buildField = (field, container, advanced) => {
   const wrapper = document.createElement("div");
-  wrapper.className = field.multiline ? "field wide" : "field";
+  wrapper.className = field.multiline || field.type === "date" || field.type === "shape" ? "field wide" : "field";
 
   const label = document.createElement("label");
   label.textContent = field.label ?? field.name;
@@ -60,6 +105,150 @@ const buildField = (field, container, advanced) => {
   wrapper.append(label);
 
   let input;
+
+  if (field.type === "seed") {
+    const row = document.createElement("div");
+    row.className = "seed-row";
+
+    input = document.createElement("input");
+    input.type = "number";
+    input.min = "0";
+    input.max = String(field.max ?? 2147483647);
+    input.step = "1";
+    input.value = String(Number.isInteger(state.currentSeed) ? state.currentSeed : field.value ?? 1);
+
+    const rollButton = document.createElement("button");
+    rollButton.type = "button";
+    rollButton.className = "chip";
+    rollButton.textContent = "Nowe tło";
+
+    const backButton = document.createElement("button");
+    backButton.type = "button";
+    backButton.className = "chip";
+    backButton.textContent = "Wstecz";
+
+    const preview = document.createElement("span");
+    preview.className = "hint";
+
+    const applySeedState = (payload) => {
+      state.currentSeed = payload.currentSeed;
+      state.seeds = Array.isArray(payload.seeds) ? payload.seeds : [];
+      input.value = String(payload.currentSeed);
+      preview.textContent = `Zapisane seed-y: ${state.seeds.length} (2 = poprzednie tło)`;
+      backButton.disabled = state.seeds.length < 2;
+    };
+
+    rollButton.addEventListener("click", async () => {
+      try {
+        applySeedState(await api("/api/seeds", jsonPost({action: "roll"})));
+        setStatus("Wylosowano nowe tło", "ok");
+      } catch (error) {
+        setStatus(`Nie udało się wylosować tła: ${error.message}`, "error");
+      }
+    });
+
+    backButton.addEventListener("click", async () => {
+      try {
+        applySeedState(await api("/api/seeds", jsonPost({action: "back"})));
+        setStatus("Wrócono do poprzedniego tła", "ok");
+      } catch (error) {
+        setStatus(`Nie udało się wrócić do poprzedniego tła: ${error.message}`, "error");
+      }
+    });
+
+    applySeedState({currentSeed: Number(input.value), seeds: state.seeds});
+
+    input.id = `field-${field.name}`;
+    input.dataset.name = field.name;
+
+    row.append(input, rollButton, backButton);
+    wrapper.append(row, preview);
+    container.append(wrapper);
+    return;
+  }
+
+  if (field.type === "shape") {
+    const count = field.count ?? 9;
+    input = document.createElement("input");
+    input.type = "hidden";
+    const suggested = state.shapeIndexSuggestion;
+    const initial =
+      state.composition.id === PREFERRED_COMPOSITION_ID && Number.isInteger(suggested) ? suggested : field.value ?? 0;
+    input.value = String(initial);
+
+    const grid = document.createElement("div");
+    grid.className = "shape-grid";
+    const buttons = [];
+
+    const sync = () => {
+      const active = Number(input.value);
+      buttons.forEach((button, index) => {
+        button.classList.toggle("active", index === active);
+        button.setAttribute("aria-pressed", String(index === active));
+      });
+      preview.textContent = `Kafelek ${active + 1} z ${count}`;
+    };
+
+    for (let index = 0; index < count; index += 1) {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "shape-cell";
+      button.textContent = String(index + 1);
+      button.addEventListener("click", () => {
+        input.value = String(index);
+        sync();
+      });
+      buttons.push(button);
+      grid.append(button);
+    }
+
+    const preview = document.createElement("span");
+    preview.className = "hint";
+
+    input.id = `field-${field.name}`;
+    input.dataset.name = field.name;
+
+    wrapper.append(input, grid, preview);
+    sync();
+    container.append(wrapper);
+    return;
+  }
+
+  if (field.type === "date") {
+    const row = document.createElement("div");
+    row.className = "date-row";
+
+    input = document.createElement("input");
+    input.type = "date";
+    const fallbackDate = /^\d{4}-\d{2}-\d{2}$/.test(field.value ?? "") ? field.value : nextTuesdayISO();
+    input.value = state.composition.id === PREFERRED_COMPOSITION_ID ? nextTuesdayISO() : fallbackDate;
+
+    const tuesdayButton = document.createElement("button");
+    tuesdayButton.type = "button";
+    tuesdayButton.className = "chip";
+    tuesdayButton.textContent = "Najbliższy wtorek";
+    tuesdayButton.addEventListener("click", () => {
+      input.value = nextTuesdayISO();
+      input.dispatchEvent(new Event("input", {bubbles: true}));
+    });
+
+    const preview = document.createElement("span");
+    preview.className = "hint";
+    const updatePreview = () => {
+      preview.textContent = input.value ? `Na plakacie: ${formatPlDate(input.value)}` : "Na plakacie: bez daty";
+    };
+    input.addEventListener("input", updatePreview);
+    updatePreview();
+
+    input.id = `field-${field.name}`;
+    input.dataset.name = field.name;
+
+    row.append(input, tuesdayButton);
+    wrapper.append(row, preview);
+    container.append(wrapper);
+    return;
+  }
+
   if (field.type === "string" && field.multiline) {
     input = document.createElement("textarea");
     input.rows = 3;
@@ -133,19 +322,32 @@ const renderForm = () => {
   frameHint.className = "hint";
   frameHint.textContent = `0-${state.composition.durationInFrames - 1}`;
   frameWrapper.append(frameLabel, frameInput, frameHint);
-  advanced.append(frameWrapper);
 
-  element("advanced-wrapper").open = false;
+  // Posty są statyczne (1 klatka), więc wybór klatki nie ma sensu.
+  if (!isStaticComposition()) {
+    advanced.append(frameWrapper);
+  }
+
+  const advancedWrapper = element("advanced-wrapper");
+  advancedWrapper.open = false;
+  advancedWrapper.hidden = advanced.children.length === 0;
 
   const meta = element("composition-meta");
   meta.innerHTML = "";
-  const pills = [
-    `${state.composition.width}x${state.composition.height}`,
-    `${state.composition.fps} fps`,
-    `${state.composition.durationSeconds} s`,
-    `${state.composition.durationInFrames} klatek`,
-    state.composition.format === "story" ? "story 9:16" : "post"
-  ];
+  const staticComposition = isStaticComposition();
+  const pills = staticComposition
+    ? [
+        `${state.composition.width}x${state.composition.height}`,
+        state.composition.format === "story" ? "story 9:16" : "post",
+        "statyczny"
+      ]
+    : [
+        `${state.composition.width}x${state.composition.height}`,
+        `${state.composition.fps} fps`,
+        `${state.composition.durationSeconds} s`,
+        `${state.composition.durationInFrames} klatek`,
+        state.composition.format === "story" ? "story 9:16" : "post"
+      ];
   for (const text of pills) {
     const pill = document.createElement("span");
     pill.className = "pill";
@@ -166,22 +368,23 @@ const fillCompositions = (compositions) => {
   const select = element("composition");
   select.innerHTML = "";
 
-  const groups = new Map();
-  for (const composition of compositions) {
-    const key = composition.format;
-    if (!groups.has(key)) {
-      const group = document.createElement("optgroup");
-      group.label = key === "story" ? "Story 9:16" : "Posty";
-      groups.set(key, group);
-      select.append(group);
-    }
+  // Generator robi posty — stories zostają w repo, ale nie zaśmiecają wyboru.
+  const posts = compositions.filter((composition) => composition.format === "post");
+  const visible = posts.length > 0 ? posts : compositions;
+
+  const group = document.createElement("optgroup");
+  group.label = "Posty";
+  select.append(group);
+
+  for (const composition of visible) {
     const option = document.createElement("option");
     option.value = composition.id;
     option.textContent = composition.id;
-    groups.get(key).append(option);
+    group.append(option);
   }
 
-  selectComposition(compositions[0]?.id);
+  const preferred = visible.find((composition) => composition.id === PREFERRED_COMPOSITION_ID) ?? visible[0];
+  selectComposition(preferred?.id);
 };
 
 const collectProps = () => {
@@ -189,20 +392,23 @@ const collectProps = () => {
   for (const field of state.composition.fields) {
     const input = document.getElementById(`field-${field.name}`);
     if (!input) continue;
-    if (field.type === "string") {
+    if (field.type === "string" || field.type === "date") {
       props[field.name] = input.value;
+    } else if (field.type === "shape" || field.type === "seed") {
+      props[field.name] = Number.parseInt(input.value, 10);
     } else if (field.type === "number") {
       if (input.value !== "") props[field.name] = Number(input.value);
     } else if (field.type === "boolean") {
       props[field.name] = input.checked;
     }
   }
-  const frame = Number.parseInt(element("frame")?.value ?? "45", 10);
-  return {props, frame: Number.isFinite(frame) ? frame : 45};
+  const fallbackFrame = isStaticComposition() ? 0 : 45;
+  const frame = Number.parseInt(element("frame")?.value ?? String(fallbackFrame), 10);
+  return {props, frame: Number.isFinite(frame) ? frame : fallbackFrame};
 };
 
 const setBusy = (busy) => {
-  for (const id of ["preview", "still", "video"]) {
+  for (const id of ["preview", "still"]) {
     element(id).disabled = busy || !state.composition;
   }
 };
@@ -210,19 +416,44 @@ const setBusy = (busy) => {
 const submitJob = async (kind) => {
   if (!state.composition) return;
   const {props, frame} = collectProps();
+  const renderedShape = props.shapeIndex;
   setBusy(true);
   try {
-    await api("/api/jobs", {
-      method: "POST",
-      headers: {"content-type": "application/json"},
-      body: JSON.stringify({compositionId: state.composition.id, kind, props, frame})
-    });
+    const payload = await api("/api/jobs", jsonPost({compositionId: state.composition.id, kind, props, frame}));
+    if (Number.isInteger(payload.shapeIndexSuggestion)) {
+      state.shapeIndexSuggestion = payload.shapeIndexSuggestion;
+      applyShapeSuggestion();
+    }
+    if (Number.isInteger(payload.currentSeed)) {
+      state.currentSeed = payload.currentSeed;
+      state.seeds = Array.isArray(payload.seeds) ? payload.seeds : state.seeds;
+    }
+    if (Number.isInteger(renderedShape) && renderedShape === 8) {
+      setStatus("Układ gotowy (9/9) — możesz wylosować nowe tło", "ok");
+    }
     await refresh();
   } catch (error) {
     setStatus(`Nie udało się zlecić renderu: ${error.message}`, "error");
   } finally {
     setBusy(false);
   }
+};
+
+/** Po renderze ustawia kolejny kafelek wzoru, żeby następny post kontynuował mozaikę. */
+const applyShapeSuggestion = () => {
+  const input = element("field-shapeIndex");
+  const suggestion = state.shapeIndexSuggestion;
+  if (!input || !Number.isInteger(suggestion)) return;
+  input.value = String(suggestion);
+  const grid = input.parentElement?.querySelector(".shape-grid");
+  if (grid) {
+    [...grid.children].forEach((button, index) => {
+      button.classList.toggle("active", index === suggestion);
+      button.setAttribute("aria-pressed", String(index === suggestion));
+    });
+  }
+  const hint = input.parentElement?.querySelector(".hint");
+  if (hint) hint.textContent = `Kafelek ${suggestion + 1} z ${grid?.children.length ?? 9}`;
 };
 
 const jobActions = (job) => {
@@ -432,12 +663,14 @@ const init = async () => {
   element("composition").addEventListener("change", (event) => selectComposition(event.target.value));
   element("preview").addEventListener("click", () => void submitJob("preview"));
   element("still").addEventListener("click", () => void submitJob("still"));
-  element("video").addEventListener("click", () => void submitJob("video"));
 
   setBusy(true);
   setStatus("Wczytuję kompozycje (pierwsze uruchomienie bundluje projekt)…", "busy");
   try {
     const payload = await api("/api/compositions");
+    state.shapeIndexSuggestion = Number.isInteger(payload.shapeIndexSuggestion) ? payload.shapeIndexSuggestion : null;
+    state.currentSeed = Number.isInteger(payload.currentSeed) ? payload.currentSeed : null;
+    state.seeds = Array.isArray(payload.seeds) ? payload.seeds : [];
     fillCompositions(payload.compositions);
     setStatus(`Wczytano ${payload.compositions.length} kompozycji`, "ok");
   } catch (error) {

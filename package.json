@@ -6,13 +6,7 @@
   "scripts": {
     "remotion:studio": "remotion studio src/index.ts",
     "remotion:compositions": "remotion compositions src/index.ts",
-    "remotion:render": "remotion render src/index.ts StoryMeeting-2026-03-31 out/story-meeting-2026-03-31.mp4",
-    "remotion:render:story-meeting": "remotion render src/index.ts StoryMeeting-2026-03-31 out/story-meeting-2026-03-31.mp4",
-    "remotion:still": "remotion still src/index.ts StoryMeeting-2026-03-31 out/story-meeting-2026-03-31.png --frame=60",
-    "remotion:render:story-meeting-2026-10-06": "remotion render src/index.ts StoryMeeting-2026-10-06 out/story-meeting-2026-10-06.mp4",
-    "remotion:still:story-meeting-2026-10-06": "remotion still src/index.ts StoryMeeting-2026-10-06 out/story-meeting-2026-10-06.png --frame=90",
-    "remotion:render:post-spotkanie-organizacyjne-2026-10-06": "remotion render src/index.ts PostSpotkanieOrganizacyjne-2026-10-06 out/post-spotkanie-organizacyjne-2026-10-06.mp4",
-    "remotion:still:post-spotkanie-organizacyjne-2026-10-06": "remotion still src/index.ts PostSpotkanieOrganizacyjne-2026-10-06 out/post-spotkanie-organizacyjne-2026-10-06.png --frame=40",
+    "remotion:still": "remotion still src/index.ts PostSpotkanieBase out/post-spotkanie-base.png --frame=0",
     "serve": "node server/index.mjs",
     "browser:ensure": "node scripts/ensure-browser.mjs",
     "typecheck": "tsc --noEmit"

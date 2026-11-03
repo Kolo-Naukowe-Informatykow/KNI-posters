@@ -14,10 +14,16 @@
 
     <main>
       <section class="card">
-        <h1>Generator materiałów KNI</h1>
+        <h1>Generator postów KNI</h1>
         <p class="muted">
-          Wybierz kompozycję bazową, nadpisz treść i wyrenderuj materiał (story 9:16 albo post). Pola wypełniają się
-          treścią kompozycji bazowej — puste pole usuwa dany tekst z materiału.
+          Wybierz szablon, uzupełnij treść i wyrenderuj post (1080x1350). Data domyślnie ustawia się na najbliższy
+          wtorek, a w polu daty jest kalendarz — na plakacie pojawi się tekst, np. „10 listopada 2026”. Puste pole usuwa
+          dany tekst z materiału.
+        </p>
+        <p class="muted small">
+          Kafelek układu: 9 postów tworzy jeden obraz w siatce Instagrama. Generator pamięta ostatnio wygenerowany
+          kafelek i domyślnie podpowiada następny. Po 9 kafelkach wylosuj nowe tło — generator zapamiętuje seedy,
+          więc możesz wrócić do poprzedniego.
         </p>
 
         <label class="field">
@@ -32,18 +38,17 @@
         <div id="form" class="form"></div>
 
         <details id="advanced-wrapper" class="advanced">
-          <summary>Zaawansowane (tło, klatka podglądu)</summary>
+          <summary>Zaawansowane</summary>
           <div id="advanced" class="form"></div>
         </details>
 
         <div class="actions">
-          <button type="button" id="preview" class="primary">Podgląd klatki</button>
+          <button type="button" id="preview" class="primary">Podgląd</button>
           <button type="button" id="still">Renderuj PNG</button>
-          <button type="button" id="video">Renderuj MP4</button>
         </div>
         <p class="muted small">
-          Podgląd: PNG w skali 0,4 (szybki). PNG: pełna rozdzielczość, jedna klatka. MP4: cały materiał (może potrwać
-          kilka minut na serwer — zadania lecą pojedynczo, w kolejce).
+          Podgląd: PNG w skali 0,4 (szybki). PNG: pełna rozdzielczość 1080x1350. Posty są statyczne, więc render MP4 nie
+          jest potrzebny.
         </p>
       </section>
 

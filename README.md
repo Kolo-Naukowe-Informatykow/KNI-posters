@@ -1,6 +1,8 @@
 # KNI posters
 
-Repo jest przygotowane do pracy z Remotion (aktualny workflow) oraz zawiera legacy materialy Typst.
+Repo generuje statyczne posty na Instagram (1080x1350) w Remotion (React + TypeScript).
+Nie robimy tu juz filmow ani animacji — materialy to pojedyncze klatki PNG.
+Folder `typst/` to legacy i nie rozwijamy go.
 
 ## Wymagania
 
@@ -26,13 +28,7 @@ Lista dostepnych kompozycji:
 npm run remotion:compositions
 ```
 
-Render MP4 domyslnej kompozycji (`StoryMeeting-2026-03-31`):
-
-```bash
-npm run remotion:render
-```
-
-Render pojedynczej klatki (PNG):
+Render domyslnego szablonu postu (`PostSpotkanieBase`) do PNG:
 
 ```bash
 npm run remotion:still
@@ -43,28 +39,32 @@ npm run remotion:still
 Kazda pozycja z `src/posts/registry.ts` jest kompozycja Remotion. Renderuj ja, podajac jej `id`:
 
 ```bash
-npx remotion still src/index.ts <ID> out/<nazwa>.png --frame=90
-npx remotion render src/index.ts <ID> out/<nazwa>.mp4
+npx remotion still src/index.ts <ID> out/<nazwa>.png --frame=0
 ```
 
-Przyklady gotowych skryptow:
+Przyklad gotowego skryptu:
 
 ```bash
-npm run remotion:still:story-meeting-2026-10-06
-npm run remotion:render:story-meeting-2026-10-06
-npm run remotion:still:post-spotkanie-organizacyjne-2026-10-06
-npm run remotion:render:post-spotkanie-organizacyjne-2026-10-06
+npm run remotion:still
 ```
+
+Kompozycje postow maja `durationInFrames: 1`, wiec kazda klatka wyglada tak samo — `--frame` nie ma znaczenia.
 
 ## Struktura materialu
 
 Kazdy material to trzy czesci:
 
-- `src/posts/<temat>/<typ>-<temat>-<rrrr-mm-dd>.component.tsx` — komponent i jego propsy,
-- `src/posts/<temat>/<typ>-<temat>-<rrrr-mm-dd>.story.ts` / `.post.ts` — definicja kompozycji (`id`, `spec`, `defaultProps`, opcjonalnie `caption`),
-- wpis w `src/posts/registry.ts` (`storyRegistry` / `postRegistry`).
+- komponent postu (wspolny `PostSpotkanieBaseTemplate`) i jego propsy,
+- `src/posts/<temat>/<typ>-<temat>-<rrrr-mm-dd>.post.ts` — definicja kompozycji (`id`, `spec`, `defaultProps`, opcjonalnie `caption`),
+- wpis w `src/posts/registry.ts` (`postRegistry`).
 
 `src/Root.tsx` automatycznie mapuje `compositionRegistry` na `<Composition />` — nie dodawaj tam rekordow recznie.
+
+Nowe posty rob na szablonie `PostSpotkanieBase`
+(`src/posts/post-spotkanie-base/post-spotkanie-base-template.component.tsx`):
+wystarczy nowa definicja z innym `id`, tekstami, `dateISO`, `shapeIndex` i `seed`. Daty nie wpisujemy
+recznie — pole `dateISO` (`RRRR-MM-DD`) jest formatowane na tekst, np. `2026-10-03` -> `3 października 2026`.
+`shapeIndex` (0-8) wybiera kafelek układu, a `seed` — które tło (ten sam seed = ten sam układ słoneczny).
 
 ## Opis (caption) do posta
 
@@ -74,20 +74,27 @@ Dzieki temu kod i tresc nie rozjezdzaja sie.
 
 ## Zdjecia (opcjonalne)
 
-Nie kazdy material musi miec zdjecia — post/story tekstowy w stylistyce story jest OK
-(np. `PostSpotkanieOrganizacyjne-2026-10-06`).
+Nie kazdy material musi miec zdjecia — prosty post tekstowy jest OK
+(np. `PostSpotkanieBase`).
 
 Materialy ze zdjeciami:
 
 - zdjecia wrzucamy do `assets/meetings/<rrrr-mm-dd>/` i importujemy w pliku `.post.ts`,
 - `slides[].imageSrc` moze byc opcjonalne — brak wartosci = czytelny placeholder, wiec material renderuje sie przed dodaniem zdjec.
 
-## Wspolna stylistyka story i post
+## Wspolna stylistyka postow
 
-Materialy o spotkaniach trzymaja jeden klimat: ciemny gradient, gwiazdy
-(`OrbitalStarsBackground`), logo `logoKNI-text-white.svg`, duza godzina.
-Wspolne elementy pochodza z `src/posts/story-meeting/story-meeting-template.component.tsx`
-(`StoryMeetingTemplateProps`, `meetingStars`).
+Kazdy post o spotkaniu ma ten sam uklad tekstu (logo, duza godzina, naglowek, data,
+temat, miejsce, stopka) i to samo, ciagle tlo rozpisane na mozaike 3x3:
+
+- `src/components/backgrounds/SolarSystemBackground.tsx` rysuje **jeden globalny obraz**:
+  ciemny gradient, gwiazdy i proceduralny układ słoneczny (słońce + orbity + planety + pas
+  planetoid). Post przesuwa tylko `viewBox`, więc na styku kafelków nie ma szwu ani przyciemnionych
+  brzegów — wszystko liczone jest w jednych współrzędnych mozaiki.
+- `src/core/mosaic/solarSystem.ts` buduje układ z `seed` (deterministyczny generator), a
+  `src/core/mosaic/mosaic.ts` mapuje `shapeIndex` 0-8 na kolumnę i wiersz siatki.
+- Orbity są cienkie i przygaszone, a słońce nie ma jasnego rdzenia (na środku kafelka leży tekst),
+  żeby wzór nie psuł czytelności.
 
 ## Czcionki
 
@@ -107,17 +114,37 @@ Linux nie ma czcionek Segoe UI ani Trebuchet MS.
 - `src/index.ts`
 - `src/Root.tsx`
 - `src/core/posts/InstagramPostDefinition.ts`
+- `src/core/dates/plDate.ts`
 - `src/core/fonts/kniFonts.ts`
+- `src/core/mosaic/mosaic.ts`
+- `src/core/mosaic/solarSystem.ts`
+- `src/components/backgrounds/SolarSystemBackground.tsx`
+- `src/posts/post-spotkanie-base/post-spotkanie-base-template.component.tsx`
+- `src/posts/post-spotkanie-base/post-spotkanie-base.post.ts`
 - `src/posts/registry.ts`
-- `src/posts/story-meeting/story-meeting-template.component.tsx`
 - `remotion.config.ts`
 
-## Web UI (generator materialow)
+## Web UI (generator postow)
 
 `server/` to mini-aplikacja (Node, bez zaleznosci poza Remotion) wystawiajaca formularz:
-wybierasz kompozycje bazowa, nadpisujesz teksty i renderujesz podglad (PNG 0,4x), PNG
-albo MP4. Zadania leca pojedynczo w kolejce, wyniki laduja w `out/` (w kontenerze na
-wolumenie), historia w `out/jobs.json`.
+wybierasz szablon postu, nadpisujesz teksty i renderujesz podglad (PNG 0,4x) albo PNG
+w pelnej rozdzielczosci. Zadania leca pojedynczo w kolejce, wyniki laduja w `out/`
+(w kontenerze na wolumenie), historia w `out/jobs.json`, a ostatni kafelek ukladu i historia
+seedow leza w `out/ui-state.json`.
+
+Pola formularza:
+
+- **Kafelek układu** — siatka 3x3. 9 postów tworzy jeden obraz w siatce Instagrama; generator
+  pamięta ostatnio wygenerowany kafelek (`out/ui-state.json`) i domyślnie podpowiada następny.
+- **Ziarno tła** — liczba, z której generator buduje układ słoneczny. Przycisk **Nowe tło**
+  losuje nowy seed (po 9 kafelkach masz świeże tło), a **Wstecz** wraca do poprzedniego.
+  Historia seedów jest zapisana w `out/ui-state.json`, więc działa też po restarcie.
+- **Data spotkania** — kalendarz (`input[type=date]`). Domyslnie ustawia sie najblizszy
+  wtorek (dzisiaj, jesli dzisiaj jest wtorek), a przycisk **Najblizszy wtorek** ustawia go
+  ponownie. Pod polem widac tekst, ktory pojawi sie na plakacie, np. `10 listopada 2026`.
+- reszta to teksty postu; puste pole usuwa dany tekst.
+
+Formularz pokazuje tylko kompozycje postow; stories zostaja w repo jako archiwum.
 
 Uruchomienie lokalne:
 
@@ -130,9 +157,9 @@ npm run serve            # http://127.0.0.1:8083
 Zmienne srodowiskowe: `PORT` (domyslnie 8083), `HOST` (0.0.0.0), `OUT_DIR`
 (domyslnie `./out`), `REMOTION_CONCURRENCY` (domyslnie auto = liczba rdzeni).
 
-API: `GET /api/health`, `GET /api/compositions`, `GET|POST /api/jobs`,
-`GET /api/jobs/<id>`, `GET /api/jobs/<id>/log`, `GET /api/jobs/<id>/file`,
-`DELETE /api/jobs/<id>` (anuluj/usun).
+API: `GET /api/health`, `GET /api/compositions` (zwraca tez `shapeIndexSuggestion` i stan seedow),
+`GET|POST /api/seeds` (`roll` / `back` / `select`), `GET|POST /api/jobs`, `GET /api/jobs/<id>`,
+`GET /api/jobs/<id>/log`, `GET /api/jobs/<id>/file`, `DELETE /api/jobs/<id>` (anuluj/usun).
 
 ### Deploy na serwer
 
@@ -141,4 +168,7 @@ repo; kontener `kni-posters` slucha na `127.0.0.1:8083`, na swiat idzie przez Ta
 Serve `:8453`. Push na `main` uruchamia `.github/workflows/deploy.yml`. Wzorzec compose:
 `deploy/docker-compose.example.yml`. Dokumentacja serwera:
 https://github.com/6ajmon/docs (`docs/02-stacki-docker.md`).
+
+
+
 

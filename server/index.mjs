@@ -5,6 +5,8 @@
  *   GET    /                     UI (formularz + lista zadan)
  *   GET    /api/health           stan serwera, wersja Remotion, status bundla
  *   GET    /api/compositions     kompozycje + opisy pol formularza
+ *   GET    /api/seeds            aktualny seed tla + historia
+ *   POST   /api/seeds            {action: roll|back|select, seed?}
  *   GET    /api/jobs             historia zadan
  *   POST   /api/jobs             nowe zadanie {compositionId, kind, props, frame, scale}
  *   GET    /api/jobs/<id>        stan zadania
@@ -17,9 +19,11 @@
 import fs from "node:fs";
 import http from "node:http";
 import path from "node:path";
+import {randomInt} from "node:crypto";
 import {describeFields, sanitizeProps} from "./lib/fields.mjs";
 import {RenderQueue} from "./lib/jobs.mjs";
 import {config, ensureOutDirs, listCompositions, prewarm, remotionVersion, repoRoot, runRender} from "./lib/renderer.mjs";
+import {createUiState} from "./lib/uiState.mjs";
 
 const PORT = Number.parseInt(process.env.PORT ?? "8083", 10);
 const HOST = process.env.HOST ?? "0.0.0.0";
@@ -43,6 +47,38 @@ const LOGO_FILES = new Set([
 ]);
 
 ensureOutDirs();
+
+const SHAPE_TILES = 9;
+const DEFAULT_SEED = 1;
+const MAX_SEED = 2147483647;
+const uiState = createUiState(config.outDir);
+
+const lastShapeIndex = () => {
+  const value = Number(uiState.read().lastShapeIndex);
+  return Number.isInteger(value) && value >= 0 && value < SHAPE_TILES ? value : null;
+};
+/** Następny kafelek układu: po zapamiętanym indeksie, a bez historii od 0. */
+const nextShapeIndex = () => {
+  const last = lastShapeIndex();
+  return last === null ? 0 : (last + 1) % SHAPE_TILES;
+};
+
+const currentSeed = () => {
+  const value = Number(uiState.read().currentSeed);
+  return Number.isInteger(value) && value >= 0 && value <= MAX_SEED ? value : DEFAULT_SEED;
+};
+
+const seedState = () => ({currentSeed: currentSeed(), seeds: uiState.seeds()});
+
+/** Nowe ziarno tła — zawsze inne od aktualnego i od tych z historii. */
+const randomSeed = () => {
+  const used = new Set(uiState.seeds());
+  for (let attempt = 0; attempt < 50; attempt += 1) {
+    const candidate = randomInt(1, MAX_SEED);
+    if (!used.has(candidate)) return candidate;
+  }
+  return randomInt(1, MAX_SEED);
+};
 
 const queue = new RenderQueue({outDir: config.outDir, runRender});
 let bundleReady = false;
@@ -139,7 +175,7 @@ const compositionPayload = async () => {
       fps: composition.fps,
       durationInFrames: composition.durationInFrames,
       durationSeconds: Number((composition.durationInFrames / composition.fps).toFixed(2)),
-      format: composition.height > composition.width ? "story" : "post",
+      format: composition.width === 1080 && composition.height === 1920 ? "story" : "post",
       fields,
       editable: fields.filter((field) => !field.advanced && field.type === "string").length,
       advanced: fields.filter((field) => field.advanced).length
@@ -204,7 +240,44 @@ const handle = async (request, response) => {
   }
 
   if (route === "/api/compositions" && method === "GET") {
-    sendJson(response, 200, {compositions: await compositionPayload()});
+    sendJson(response, 200, {
+      compositions: await compositionPayload(),
+      shapeIndexSuggestion: nextShapeIndex(),
+      lastShapeIndex: lastShapeIndex(),
+      ...seedState()
+    });
+    return;
+  }
+
+  if (route === "/api/seeds" && method === "GET") {
+    sendJson(response, 200, seedState());
+    return;
+  }
+
+  if (route === "/api/seeds" && method === "POST") {
+    const body = await readJsonBody(request);
+    const action = body.action ?? "roll";
+
+    if (action === "roll") {
+      uiState.rememberSeed(randomSeed());
+    } else if (action === "back") {
+      const history = uiState.seeds();
+      const trimmed = history.length > 1 ? history.slice(0, -1) : history;
+      const previous = trimmed[trimmed.length - 1];
+      uiState.write({seeds: trimmed, currentSeed: previous ?? DEFAULT_SEED});
+    } else if (action === "select") {
+      const seed = Number(body.seed);
+      if (!Number.isInteger(seed) || seed < 0 || seed > MAX_SEED) {
+        sendJson(response, 400, {error: "Nieprawidłowy seed"});
+        return;
+      }
+      uiState.rememberSeed(seed);
+    } else {
+      sendJson(response, 400, {error: `Nieznana akcja: ${action}`});
+      return;
+    }
+
+    sendJson(response, 200, seedState());
     return;
   }
 
@@ -256,7 +329,18 @@ const handle = async (request, response) => {
       scale: kind === "video" ? null : scale
     });
 
-    sendJson(response, 202, {job: queue.get(job.id)});
+    if (Number.isInteger(props.shapeIndex)) {
+      uiState.write({lastShapeIndex: props.shapeIndex});
+    }
+    if (Number.isInteger(props.seed)) {
+      uiState.rememberSeed(props.seed);
+    }
+
+    sendJson(response, 202, {
+      job: queue.get(job.id),
+      shapeIndexSuggestion: nextShapeIndex(),
+      ...seedState()
+    });
     return;
   }
 
