@@ -1,5 +1,18 @@
 name: Deploy na serwer
 
+# Auto-deploy KNI posters: po pushu na main runner wchodzi do tailnetu
+# (Tailscale OAuth, tag:ci) i uruchamia /srv/kni-posters/deploy.sh na serwerze
+# (git fetch + docker build + up).
+#
+# Wymagane sekrety w repo (Settings -> Secrets and variables -> Actions):
+#   TS_OAUTH_CLIENT_ID / TS_OAUTH_SECRET - klient OAuth Tailscale z tagiem tag:ci
+#   DEPLOY_HOST                          - adres serwera w tailnecie (HOST)
+#   DEPLOY_USER                          - deploy
+#   DEPLOY_SSH_KEY                       - klucz prywatny (przydatny tylko przy zwyklym sshd)
+#
+# Uwaga: na serwerze dziala Tailscale SSH, wiec logowanie idzie po tozsamosci
+# wezla (tag:ci), a deploy.sh jest root:root 0700 -> uruchamiamy przez waskie
+# sudo (sudoers: /etc/sudoers.d/deploy-sh).
 on:
   push:
     branches: [main]
@@ -13,6 +26,25 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
+      # Brak sekretow = CZERWONY run, zeby zielony run znaczyl "wdrozono".
+      - name: Sprawdz, czy sekrety sa ustawione
+        env:
+          TS_ID: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          TS_SECRET: ${{ secrets.TS_OAUTH_SECRET }}
+          DEPLOY_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_HOSTNAME: ${{ secrets.DEPLOY_HOST }}
+        run: |
+          brakuje=""
+          if [ -z "$TS_ID" ]; then brakuje="$brakuje TS_OAUTH_CLIENT_ID"; fi
+          if [ -z "$TS_SECRET" ]; then brakuje="$brakuje TS_OAUTH_SECRET"; fi
+          if [ -z "$DEPLOY_KEY" ]; then brakuje="$brakuje DEPLOY_SSH_KEY"; fi
+          if [ -z "$DEPLOY_HOSTNAME" ]; then brakuje="$brakuje DEPLOY_HOST"; fi
+          if [ -n "$brakuje" ]; then
+            echo "::error::Brakuje sekretow:$brakuje - deploy niemozliwy."
+            exit 1
+          fi
+          echo "Sekrety kompletne - startuje deploy."
+
       - name: Polacz z tailnetem (Tailscale)
         uses: tailscale/github-action@v3
         with:
@@ -30,4 +62,4 @@ jobs:
           printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
           ssh -o StrictHostKeyChecking=accept-new -o ConnectTimeout=20 \
-              "$DEPLOY_USER@$DEPLOY_HOST" /srv/kni-posters/deploy.sh
+              "$DEPLOY_USER@$DEPLOY_HOST" "sudo -n /srv/kni-posters/deploy.sh"
