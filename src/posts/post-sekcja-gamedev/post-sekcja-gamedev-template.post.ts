@@ -40,7 +40,7 @@ Wstęp wolny, nie trzeba się zapisywać.
     locationLabel: "gdzie?",
     locationValue: "Wydział Matematyki\ni Informatyki, sala L9",
     footer: "do zobaczenia!",
-    icon: "kni-gamepad",
+    icon: "kni-gamedev",
     theme: "gamedev"
   };
 }

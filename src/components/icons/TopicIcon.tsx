@@ -1,6 +1,7 @@
 import type React from "react";
 import packsManifest from "../../core/icons/icon-packs.json";
 import kniIcons from "../../core/icons/kni-icons.json";
+import kniBrandIcons from "../../core/icons/kni-brand-icons.json";
 import phosphorIcons from "../../core/icons/phosphor-icons.json";
 
 /** Id ikony: `kni-*` z zestawu KNI albo nazwa z paczki Phosphor, np. `shield-check`. */
@@ -19,6 +20,7 @@ const PACKS = (packsManifest as {packs: IconPack[]}).packs;
 
 const PACK_ICONS: Record<string, Record<string, string>> = {
   kni: kniIcons as Record<string, string>,
+  brand: kniBrandIcons as Record<string, string>,
   phosphor: phosphorIcons as Record<string, string>
 };
 

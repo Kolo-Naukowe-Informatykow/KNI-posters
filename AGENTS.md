@@ -32,8 +32,10 @@ Ten dokument definiuje standard tworzenia nowych materialow na Instagram dla Kol
 - Dane tekstowe i warianty przekazuj przez `defaultProps` i silnie typowane propsy.
 - Temat spotkania zaznaczaj ikoną (`icon`) w lewym górnym rogu; ikona jest jednokolorowa
   i bierze kolor z palety (`theme`). Domyślnie używaj zestawu KNI (`src/core/icons/kni-icons.json`):
-  `kni-robot`, `kni-gamepad`, `kni-chat`, `kni-shield`, `kni-shapes`. W pickerze jest też cała
-  paczka Phosphor w wariancie bold (`src/core/icons/phosphor-icons.json`, `npm run icons:build`).
+  `kni-robot`, `kni-gamepad`, `kni-chat`, `kni-shield`, `kni-shapes`. W paczce `brand`
+  (`src/core/icons/kni-brand-icons.json`) są znaki sekcji w wersji wypełnianej — np. `kni-gamedev`.
+  W pickerze jest też cała paczka Phosphor w wariancie bold (`src/core/icons/phosphor-icons.json`,
+  `npm run icons:build`).
 - Palety trzymaj w `src/core/posts/post-themes.json` (`default`, `general`, `robotics`, `cyber`, `gamedev`).
   Osobne spotkania sekcji mają własny kolor tła i akcentu, żeby były rozpoznawalne.
 - Nagłówek sekcji ustawiaj przez `sectionLabel` (np. `Sekcja robotyki`, `Redflag`); puste pole go ukrywa.
@@ -108,6 +110,8 @@ Ten dokument definiuje standard tworzenia nowych materialow na Instagram dla Kol
   - `logoKNI-text-accent.svg`
   - `logoKNI-text-white.svg`
   - `logoKNI-white.svg`
+- Znak sekcji gamedev: `assets/logoGamedev.svg` (czarny), `logoGamedev-white.svg`,
+  `logoGamedev-accent.svg` (złoty `#e8cd79`); ta sama geometria co ikona `kni-gamedev`.
 - Zachowuj proporcje logo; nie rozciagaj i nie deformuj.
 - Zdjecia ze spotkan na chwile obecna trzymaj w `assets/meetings/<rrrr-mm-dd>/`.
 - Czcionki trzymaj w `public/fonts/` i ustawiaj przez `KNI_FONT_FAMILY`

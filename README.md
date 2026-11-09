@@ -101,6 +101,8 @@ temat, miejsce, stopka) i to samo, ciagle tlo rozpisane na mozaike 3x3:
 - `icon` — jednokolorowa ikona w lewym górnym rogu. Domyślny jest własny zestaw KNI
   (`src/core/icons/kni-icons.json`): `kni-robot` (robotyka), `kni-gamepad` (gamedev),
   `kni-chat` (spotkania ogólne), `kni-shield` (Redflag), `kni-shapes` (matematyka).
+  Znaki sekcji w wersji wypełnianej siedzą w paczce `brand` (`src/core/icons/kni-brand-icons.json`) —
+  `kni-gamedev` to słoik z dżemu z przyciskiem play (logo `assets/logoGamedev*.svg`).
   Do wyboru jest też cała paczka Phosphor w wariancie bold (`src/core/icons/phosphor-icons.json`,
   `npm run icons:build`). Rysuje je `src/components/icons/TopicIcon.tsx`.
 - `theme` — paleta z `src/core/posts/post-themes.json` (czytana przez `postThemes.ts`):
@@ -144,6 +146,7 @@ Linux nie ma czcionek Segoe UI ani Trebuchet MS.
 - `src/core/posts/post-themes.json`
 - `src/core/icons/icon-packs.json`
 - `src/core/icons/kni-icons.json`
+- `src/core/icons/kni-brand-icons.json`
 - `src/core/icons/phosphor-icons.json`
 - `src/components/icons/TopicIcon.tsx`
 - `src/core/mosaic/mosaic.ts`
