@@ -83,14 +83,14 @@ export const PostSpotkanieBaseTemplate: React.FC<PostSpotkanieBaseProps> = ({
     >
       <SolarSystemBackground shapeIndex={shapeIndex} seed={seed} palette={theme} />
 
-      <div style={{position: "absolute", top: 74, left: 68}}>
+      <div style={{position: "absolute", top: 46, left: 68}}>
         <TopicIcon name={icon} size={156} color={theme.accent} />
       </div>
 
       <div
         style={{
           position: "absolute",
-          top: 74,
+          top: 46,
           left: 0,
           right: 0,
           display: "flex",
@@ -104,7 +104,7 @@ export const PostSpotkanieBaseTemplate: React.FC<PostSpotkanieBaseProps> = ({
         <div
           style={{
             position: "absolute",
-            top: 444,
+            top: 416,
             left: 84,
             right: 84,
             display: "flex",
@@ -132,7 +132,7 @@ export const PostSpotkanieBaseTemplate: React.FC<PostSpotkanieBaseProps> = ({
       <div
         style={{
           position: "absolute",
-          top: 512,
+          top: 524,
           left: 84,
           right: 84,
           height: 300,
@@ -190,7 +190,7 @@ export const PostSpotkanieBaseTemplate: React.FC<PostSpotkanieBaseProps> = ({
             width: 480,
             maxWidth: "100%",
             height: 4,
-            margin: "0 auto 40px",
+            margin: "0 auto 28px",
             borderRadius: 999,
             background: theme.accent
           }}
