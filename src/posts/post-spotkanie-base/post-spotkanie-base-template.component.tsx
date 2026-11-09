@@ -2,8 +2,10 @@ import type React from "react";
 import {AbsoluteFill, Img} from "remotion";
 import logoKniTextWhite from "../../../assets/logoKNI-text-white.svg";
 import {SolarSystemBackground} from "../../components/backgrounds/SolarSystemBackground";
+import {TopicIcon, type TopicIconName} from "../../components/icons/TopicIcon";
 import {formatPlDate} from "../../core/dates/plDate";
 import {KNI_FONT_FAMILY} from "../../core/fonts/kniFonts";
+import {resolvePostTheme, type PostThemeName} from "../../core/posts/postThemes";
 
 export type PostSpotkanieBaseProps = {
   /** Kafelek mozaiki 0-8 — 9 postów tworzy jeden układ w siatce Instagrama. */
@@ -19,28 +21,18 @@ export type PostSpotkanieBaseProps = {
   locationLabel: string;
   locationValue: string;
   footer: string;
-};
-
-const labelStyle: React.CSSProperties = {
-  margin: 0,
-  fontSize: 44,
-  fontWeight: 600,
-  whiteSpace: "pre-line",
-  color: "#e3e9ff"
-};
-
-const valueStyle: React.CSSProperties = {
-  margin: 0,
-  fontSize: 44,
-  lineHeight: 1.2,
-  fontWeight: 700,
-  whiteSpace: "pre-line",
-  color: "#ffdbed"
+  /** Jednokolorowa ikona tematu w lewym górnym rogu. */
+  icon?: TopicIconName;
+  /** Paleta kolorów — osobne kolory dla spotkań sekcji. */
+  theme?: PostThemeName;
+  /** Nagłówek sekcji pod logo, np. `Sekcja robotyki` albo `Redflag`. */
+  sectionLabel?: string;
 };
 
 /**
  * Bazowy, statyczny szablon postu o spotkaniu (1080x1350).
- * Układ tekstu jest zawsze ten sam, zmienia się wycinek proceduralnego tła.
+ * Układ tekstu jest zawsze ten sam, zmienia się wycinek proceduralnego tła,
+ * ikona tematu i paleta kolorów sekcji.
  */
 export const PostSpotkanieBaseTemplate: React.FC<PostSpotkanieBaseProps> = ({
   shapeIndex,
@@ -52,34 +44,88 @@ export const PostSpotkanieBaseTemplate: React.FC<PostSpotkanieBaseProps> = ({
   topicValue,
   locationLabel,
   locationValue,
-  footer
+  footer,
+  icon = "kni-chat",
+  theme: themeName,
+  sectionLabel
 }) => {
   const dateLabel = formatPlDate(dateISO);
   const hasTopic = Boolean(topicLabel?.trim() && topicValue?.trim());
+  const theme = resolvePostTheme(themeName);
+
+  const labelStyle: React.CSSProperties = {
+    margin: 0,
+    fontSize: 44,
+    fontWeight: 600,
+    whiteSpace: "pre-line",
+    color: theme.accentSoft
+  };
+
+  const valueStyle: React.CSSProperties = {
+    margin: 0,
+    fontSize: 44,
+    lineHeight: 1.2,
+    fontWeight: 700,
+    whiteSpace: "pre-line",
+    color: theme.accent
+  };
 
   return (
     <AbsoluteFill
       style={{
-        background: "#0b0b14",
+        background: theme.backgroundEnd,
         color: "#ffffff",
         fontFamily: KNI_FONT_FAMILY,
         overflow: "hidden"
       }}
     >
-      <SolarSystemBackground shapeIndex={shapeIndex} seed={seed} />
+      <SolarSystemBackground shapeIndex={shapeIndex} seed={seed} palette={theme} />
+
+      <div style={{position: "absolute", top: 74, left: 68}}>
+        <TopicIcon name={icon} size={156} color={theme.accent} />
+      </div>
 
       <div
         style={{
           position: "absolute",
-          top: 86,
+          top: 74,
           left: 0,
           right: 0,
           display: "flex",
           justifyContent: "center"
         }}
       >
-        <Img src={logoKniTextWhite} style={{width: 360, maxWidth: "100%"}} />
+        <Img src={logoKniTextWhite} style={{width: 440, maxWidth: "100%"}} />
       </div>
+
+      {sectionLabel?.trim() ? (
+        <div
+          style={{
+            position: "absolute",
+            top: 444,
+            left: 84,
+            right: 84,
+            display: "flex",
+            justifyContent: "center"
+          }}
+        >
+          <span
+            style={{
+              padding: "12px 34px",
+              border: `2px solid ${theme.glow}`,
+              borderRadius: 999,
+              backgroundColor: `${theme.glow}22`,
+              color: theme.accent,
+              fontSize: 38,
+              fontWeight: 700,
+              letterSpacing: 1.5,
+              whiteSpace: "nowrap"
+            }}
+          >
+            {sectionLabel}
+          </span>
+        </div>
+      ) : null}
 
       <div
         style={{
@@ -87,7 +133,7 @@ export const PostSpotkanieBaseTemplate: React.FC<PostSpotkanieBaseProps> = ({
           top: 512,
           left: 84,
           right: 84,
-          height: 330,
+          height: 300,
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
@@ -101,7 +147,7 @@ export const PostSpotkanieBaseTemplate: React.FC<PostSpotkanieBaseProps> = ({
               fontSize: 138,
               fontWeight: 800,
               lineHeight: 0.95,
-              color: "#ffdbed",
+              color: theme.accent,
               letterSpacing: 1
             }}
           >
@@ -144,7 +190,7 @@ export const PostSpotkanieBaseTemplate: React.FC<PostSpotkanieBaseProps> = ({
             height: 4,
             margin: "0 auto 40px",
             borderRadius: 999,
-            background: "#ffdbed"
+            background: theme.accent
           }}
         />
         {hasTopic ? (

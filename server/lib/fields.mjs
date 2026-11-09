@@ -2,12 +2,15 @@
  * Opisy pól formularza dla propsów kompozycji Remotion.
  *
  * Formularz wystawia TYLKO propsy skalarne (string / number / boolean) oraz pola
- * specjalne: `date` (kalendarz), `shape` (kafelek mozaiki) i `seed` (ziarno tła).
+ * specjalne: `date` (kalendarz), `shape` (kafelek mozaiki), `seed` (ziarno tła),
+ * `icon` (picker ikon z wyszukiwarką) i `theme` (kafelki kolorystyki).
  * Reszta propsów (np. tablica `slides` z obrazkami w PostTFNiS) zostaje z
  * `defaultProps` kompozycji, bo Remotion płasko scala `defaultProps` z propsami
  * przekazanymi do renderu (zweryfikowane empirycznie: `--props` / `inputProps`
  * nadpisują tylko podane klucze, reszta pochodzi z `defaultProps`).
  */
+
+import {iconNames, isKnownIcon} from "./icons.mjs";
 
 const MAX_SEED = 2147483647;
 
@@ -23,6 +26,9 @@ const LABELS = {
   locationLabel: "Etykieta miejsca",
   locationValue: "Miejsce",
   footer: "Stopka",
+  sectionLabel: "Nagłówek sekcji",
+  icon: "Ikona tematu",
+  theme: "Kolorystyka",
   dateTimeLabel: "Data i godzina"
 };
 
@@ -38,6 +44,9 @@ const HINTS = {
   locationLabel: "np. gdzie?",
   locationValue: "np. WMiI, sala L9 (Enter = nowa linia)",
   footer: "np. serdecznie zapraszamy!",
+  sectionLabel: "np. Sekcja robotyki albo Redflag (puste = brak nagłówka)",
+  icon: "Ikona w lewym górnym rogu; szukaj po nazwie (np. kni, shield, gamepad)",
+  theme: "Kolor tła i akcentu sekcji",
   dateTimeLabel: "np. 25.04.2026, 10:00-16:00"
 };
 
@@ -50,6 +59,9 @@ const ORDER = [
   "dateTimeLabel",
   "dateLabel",
   "headline",
+  "sectionLabel",
+  "icon",
+  "theme",
   "topicLabel",
   "topicValue",
   "locationLabel",
@@ -65,6 +77,56 @@ const SHAPE_FIELDS = new Map([["shapeIndex", 9]]);
 
 /** Pola z ziarnem tła: UI pokazuje losowanie i historię seedów. */
 const SEED_FIELDS = new Set(["seed"]);
+
+/** Pola zajmujące całą szerokość formularza (dłuższe teksty). */
+const WIDE_FIELDS = new Set(["headline"]);
+
+/**
+ * Ikony tematu pochodza z paczki Lucide (`src/core/icons/lucide-icons.json`).
+ * UI pokazuje je jako picker z wyszukiwarka; liste wartosci waliduje `isKnownIcon`.
+ */
+const THEME_OPTIONS = [
+  {
+    value: "default",
+    label: "Domyślna",
+    accent: "#ffdbed",
+    glow: "#6c63ff",
+    backgroundStart: "#1b1638",
+    backgroundEnd: "#0b0b16"
+  },
+  {
+    value: "general",
+    label: "Ogólna",
+    accent: "#cfe3ff",
+    glow: "#4f9dff",
+    backgroundStart: "#10213a",
+    backgroundEnd: "#08121b"
+  },
+  {
+    value: "robotics",
+    label: "Robotyka",
+    accent: "#ffd6a0",
+    glow: "#ff8a3d",
+    backgroundStart: "#2b1c12",
+    backgroundEnd: "#0b0a12"
+  },
+  {
+    value: "cyber",
+    label: "Redflag",
+    accent: "#ffb3bd",
+    glow: "#ff3d5a",
+    backgroundStart: "#2a1220",
+    backgroundEnd: "#0b0a12"
+  },
+  {
+    value: "gamedev",
+    label: "Gamedev",
+    accent: "#c6f5b0",
+    glow: "#48d17a",
+    backgroundStart: "#12291c",
+    backgroundEnd: "#080f0b"
+  }
+];
 
 const label = (name) =>
   LABELS[name] ??
@@ -88,12 +150,28 @@ export const describeFields = (defaultProps = {}) => {
         fields.push({name, label: label(name), type: "date", value, hint: HINTS[name]});
         continue;
       }
+      if (name === "icon") {
+        fields.push({
+          name,
+          label: label(name),
+          type: "icon",
+          value,
+          count: iconNames.length,
+          hint: HINTS[name]
+        });
+        continue;
+      }
+      if (name === "theme") {
+        fields.push({name, label: label(name), type: "theme", value, options: THEME_OPTIONS, hint: HINTS[name]});
+        continue;
+      }
       fields.push({
         name,
         label: label(name),
         type: "string",
         value,
         multiline: value.includes("\n") || value.length > 48,
+        wide: WIDE_FIELDS.has(name),
         hint: HINTS[name]
       });
     } else if (typeof value === "number") {
@@ -176,6 +254,18 @@ export const sanitizeProps = (fields, rawProps) => {
       }
       if (rawValue.length > 2000) {
         errors.push(`Pole ${name} jest za długie (limit 2000 znaków)`);
+        continue;
+      }
+      result[name] = rawValue;
+    } else if (field.type === "icon") {
+      if (!isKnownIcon(rawValue)) {
+        errors.push(`Pole ${name} musi być ikoną z paczki`);
+        continue;
+      }
+      result[name] = rawValue;
+    } else if (field.type === "theme") {
+      if (typeof rawValue !== "string" || !field.options.some((option) => option.value === rawValue)) {
+        errors.push(`Pole ${name} musi być jedną z dozwolonych wartości`);
         continue;
       }
       result[name] = rawValue;

@@ -96,6 +96,27 @@ temat, miejsce, stopka) i to samo, ciagle tlo rozpisane na mozaike 3x3:
 - Orbity są cienkie i przygaszone, a słońce nie ma jasnego rdzenia (na środku kafelka leży tekst),
   żeby wzór nie psuł czytelności.
 
+### Ikona, kolorystyka i nagłówek sekcji
+
+- `icon` — jednokolorowa ikona w lewym górnym rogu. Domyślny jest własny zestaw KNI
+  (`src/core/icons/kni-icons.json`): `kni-robot` (robotyka), `kni-gamepad` (gamedev),
+  `kni-chat` (spotkania ogólne), `kni-shield` (Redflag), `kni-shapes` (matematyka).
+  Do wyboru jest też cała paczka Phosphor w wariancie bold (`src/core/icons/phosphor-icons.json`,
+  `npm run icons:build`). Rysuje je `src/components/icons/TopicIcon.tsx`.
+- `theme` — paleta z `src/core/posts/postThemes.ts`: `default` (tematy), `general` (spotkania ogólne),
+  `robotics` (bursztyn), `cyber` (Redflag, czerwień), `gamedev` (zieleń). Paleta zmienia też tło mozaiki.
+- `sectionLabel` — nagłówek sekcji pod logo (`Sekcja robotyki`, `Redflag`); puste pole ukrywa nagłówek.
+
+Szablony spotkań sekcji:
+
+- `PostSekcjaOgolna` — wtorki, 18:00, sala L9 (`src/posts/post-sekcja-ogolna/`),
+- `PostSekcjaRobotyka` — poniedziałki, 18:00, sala L15 (`src/posts/post-sekcja-robotyka/`),
+- `PostSekcjaGamedev` — środy, 18:00, sala L9 (`src/posts/post-sekcja-gamedev/`); godzina i sala do potwierdzenia,
+- `PostRedflag` — czwartki, 18:00, sala L9 (`src/posts/post-redflag/`); godzina i sala do potwierdzenia.
+
+W generatorze `icon` to picker z wyszukiwarką (zestaw KNI + cała paczka Phosphor), `theme` to kafelki
+z podglądem kolorów, a `sectionLabel` zwykłe pole tekstowe.
+
 ## Czcionki
 
 Czcionki sa czescia repo (`public/fonts/`) i wczytuje je `src/core/fonts/kniFonts.ts`.
@@ -116,6 +137,11 @@ Linux nie ma czcionek Segoe UI ani Trebuchet MS.
 - `src/core/posts/InstagramPostDefinition.ts`
 - `src/core/dates/plDate.ts`
 - `src/core/fonts/kniFonts.ts`
+- `src/core/posts/postThemes.ts`
+- `src/core/icons/icon-packs.json`
+- `src/core/icons/kni-icons.json`
+- `src/core/icons/phosphor-icons.json`
+- `src/components/icons/TopicIcon.tsx`
 - `src/core/mosaic/mosaic.ts`
 - `src/core/mosaic/solarSystem.ts`
 - `src/components/backgrounds/SolarSystemBackground.tsx`
@@ -142,8 +168,9 @@ Pola formularza:
   losuje nowy seed (po 9 kafelkach masz świeże tło), a **Wstecz** wraca do poprzedniego.
   Historia seedów jest zapisana w `out/ui-state.json`, więc działa też po restarcie.
 - **Data spotkania** — kalendarz (`input[type=date]`). Domyslnie ustawia sie najblizszy
-  wtorek (dzisiaj, jesli dzisiaj jest wtorek), a przycisk **Najblizszy wtorek** ustawia go
-  ponownie. Pod polem widac tekst, ktory pojawi sie na plakacie, np. `10 listopada 2026`.
+  wtorek (dzisiaj, jesli dzisiaj jest wtorek), a przyciski **Najblizszy wtorek**
+  i **Najblizszy poniedzialek** ustawiaja date ponownie. Pod polem widac tekst,
+  ktory pojawi sie na plakacie, np. `10 listopada 2026`.
 - reszta to teksty postu; puste pole usuwa dany tekst.
 
 Formularz pokazuje tylko kompozycje postow; stories zostaja w repo jako archiwum.

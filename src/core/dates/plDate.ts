@@ -33,13 +33,28 @@ export const formatPlDate = (isoDate: string): string => {
 };
 
 /**
- * Najbliższy wtorek jako `YYYY-MM-DD` (dziś, jeśli dziś jest wtorek).
- * Domyślna data nowego postu o spotkaniu.
+ * Najbliższy wybrany dzień tygodnia jako `YYYY-MM-DD` (dziś, jeśli dziś wypada ten dzień).
+ * `weekday` liczony jak w `Date#getDay()`: 0 = niedziela, 1 = poniedziałek, ... 6 = sobota.
  */
-export const nextTuesdayISO = (today = new Date()): string => {
+export const nextWeekdayISO = (weekday: number, today = new Date()): string => {
   const date = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 12);
-  date.setDate(date.getDate() + ((2 - date.getDay() + 7) % 7));
+  date.setDate(date.getDate() + ((weekday - date.getDay() + 7) % 7));
 
   const pad = (value: number) => String(value).padStart(2, "0");
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
 };
+
+/**
+ * Najbliższy wtorek jako `YYYY-MM-DD` (dziś, jeśli dziś jest wtorek).
+ * Domyślna data nowego postu o spotkaniu.
+ */
+export const nextTuesdayISO = (today = new Date()): string => nextWeekdayISO(2, today);
+
+/** Najbliższy poniedziałek — domyślna data spotkania sekcji robotyki. */
+export const nextMondayISO = (today = new Date()): string => nextWeekdayISO(1, today);
+
+/** Najbliższy czwartek — domyślna data spotkania Redflag. */
+export const nextThursdayISO = (today = new Date()): string => nextWeekdayISO(4, today);
+
+/** Najbliższa środa — domyślna data spotkania sekcji gamedev. */
+export const nextWednesdayISO = (today = new Date()): string => nextWeekdayISO(3, today);

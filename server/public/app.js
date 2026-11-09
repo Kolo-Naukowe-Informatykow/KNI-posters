@@ -38,7 +38,8 @@ const state = {
   timer: null,
   shapeIndexSuggestion: null,
   currentSeed: null,
-  seeds: []
+  seeds: [],
+  iconPacks: []
 };
 
 const element = (id) => document.getElementById(id);
@@ -77,13 +78,19 @@ const formatSize = (bytes) => {
 const toISODate = (date) =>
   `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 
-/** Najbliższy wtorek (dziś, jeśli dziś jest wtorek) — domyślna data postu. */
-const nextTuesdayISO = () => {
+/** Najbliższy wybrany dzień tygodnia (dziś, jeśli dziś wypada ten dzień). */
+const nextWeekdayISO = (weekday) => {
   const date = new Date();
   date.setHours(12, 0, 0, 0);
-  date.setDate(date.getDate() + ((2 - date.getDay() + 7) % 7));
+  date.setDate(date.getDate() + ((weekday - date.getDay() + 7) % 7));
   return toISODate(date);
 };
+
+/** Najbliższy wtorek — domyślna data postu. */
+const nextTuesdayISO = () => nextWeekdayISO(2);
+
+/** Najbliższy poniedziałek — spotkania sekcji robotyki. */
+const nextMondayISO = () => nextWeekdayISO(1);
 
 /** "2026-10-03" -> "3 października 2026" — tak samo jak w komponencie postu. */
 const formatPlDate = (iso) => {
@@ -95,9 +102,44 @@ const formatPlDate = (iso) => {
 
 const isStaticComposition = () => (state.composition?.durationInFrames ?? 0) <= 1;
 
+/** Szuka ikony we wszystkich paczkach; zwraca paczkę i markup. */
+const findIcon = (name) => {
+  for (const pack of state.iconPacks) {
+    const markup = pack.icons?.[name];
+    if (markup) return {pack, markup};
+  }
+  return null;
+};
+
+/** Podgląd ikony jako inline SVG w jednym kolorze (linia albo wypełnienie, zależnie od paczki). */
+const iconPreview = (name) => {
+  const found = findIcon(name) ?? (state.iconPacks[0] && findIcon("kni-chat"));
+  if (!found) return "";
+
+  const {pack, markup} = found;
+  if (pack.render === "stroke") {
+    const unit = Number(pack.viewBox?.split(/\s+/)[2]) || 24;
+    // W pickerze linia ma ~2 px niezależnie od siatki ikony.
+    const strokeWidth = ((2.2 * unit) / 26).toFixed(2);
+    return `<svg viewBox="${pack.viewBox}" fill="none" stroke="currentColor" stroke-width="${strokeWidth}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${markup}</svg>`;
+  }
+
+  return `<svg viewBox="${pack.viewBox}" fill="currentColor" stroke="none" aria-hidden="true">${markup}</svg>`;
+};
+
+/** "kni-robot" -> "Robot", "game-controller" -> "Game controller". */
+const iconLabel = (name) =>
+  name
+    .replace(/^kni-/, "")
+    .replace(/-/g, " ")
+    .replace(/^./, (char) => char.toUpperCase());
+
 const buildField = (field, container, advanced) => {
   const wrapper = document.createElement("div");
-  wrapper.className = field.multiline || field.type === "date" || field.type === "shape" ? "field wide" : "field";
+  wrapper.className =
+    field.wide || field.multiline || field.type === "date" || field.type === "shape" || field.type === "icon" || field.type === "theme"
+      ? "field wide"
+      : "field";
 
   const label = document.createElement("label");
   label.textContent = field.label ?? field.name;
@@ -223,14 +265,20 @@ const buildField = (field, container, advanced) => {
     const fallbackDate = /^\d{4}-\d{2}-\d{2}$/.test(field.value ?? "") ? field.value : nextTuesdayISO();
     input.value = state.composition.id === PREFERRED_COMPOSITION_ID ? nextTuesdayISO() : fallbackDate;
 
-    const tuesdayButton = document.createElement("button");
-    tuesdayButton.type = "button";
-    tuesdayButton.className = "chip";
-    tuesdayButton.textContent = "Najbliższy wtorek";
-    tuesdayButton.addEventListener("click", () => {
-      input.value = nextTuesdayISO();
-      input.dispatchEvent(new Event("input", {bubbles: true}));
-    });
+    const dayButton = (text, getDate) => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "chip";
+      button.textContent = text;
+      button.addEventListener("click", () => {
+        input.value = getDate();
+        input.dispatchEvent(new Event("input", {bubbles: true}));
+      });
+      return button;
+    };
+
+    const tuesdayButton = dayButton("Najbliższy wtorek", nextTuesdayISO);
+    const mondayButton = dayButton("Najbliższy poniedziałek", nextMondayISO);
 
     const preview = document.createElement("span");
     preview.className = "hint";
@@ -243,8 +291,130 @@ const buildField = (field, container, advanced) => {
     input.id = `field-${field.name}`;
     input.dataset.name = field.name;
 
-    row.append(input, tuesdayButton);
+    row.append(input, tuesdayButton, mondayButton);
     wrapper.append(row, preview);
+    container.append(wrapper);
+    return;
+  }
+
+  if (field.type === "icon") {
+    input = document.createElement("input");
+    input.type = "hidden";
+    input.value = field.value ?? "";
+    input.id = `field-${field.name}`;
+    input.dataset.name = field.name;
+
+    const picker = document.createElement("div");
+    picker.className = "icon-picker";
+
+    const search = document.createElement("input");
+    search.type = "text";
+    search.className = "icon-search";
+    search.placeholder = `Szukaj ikony (${field.count ?? state.iconPacks.reduce((sum, pack) => sum + Object.keys(pack.icons ?? {}).length, 0)} w paczce)`;
+    search.autocomplete = "off";
+
+    const grid = document.createElement("div");
+    grid.className = "icon-grid";
+
+    const status = document.createElement("span");
+    status.className = "hint";
+
+    const names = state.iconPacks.flatMap((pack) => Object.keys(pack.icons ?? {}));
+    const buttons = names.map((name) => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "icon-cell";
+      button.dataset.value = name;
+      button.title = iconLabel(name);
+      button.innerHTML = iconPreview(name);
+      button.addEventListener("click", () => {
+        input.value = name;
+        sync();
+      });
+      return button;
+    });
+    grid.append(...buttons);
+
+    const updateStatus = (visible = buttons.length) => {
+      status.textContent = `${visible} z ${buttons.length} ikon · wybrana: ${input.value || "brak"}`;
+    };
+
+    const sync = () => {
+      buttons.forEach((button) => {
+        const active = button.dataset.value === input.value;
+        button.classList.toggle("active", active);
+        button.setAttribute("aria-pressed", String(active));
+      });
+      updateStatus();
+    };
+
+    search.addEventListener("input", () => {
+      const query = search.value.trim().toLowerCase();
+      let visible = 0;
+      for (const button of buttons) {
+        const match = !query || button.dataset.value.includes(query);
+        button.hidden = !match;
+        if (match) visible += 1;
+      }
+      updateStatus(visible);
+    });
+
+    sync();
+    picker.append(search, grid, status);
+    wrapper.append(input, picker);
+
+    if (field.hint) {
+      const hint = document.createElement("span");
+      hint.className = "hint";
+      hint.textContent = field.hint;
+      wrapper.append(hint);
+    }
+
+    container.append(wrapper);
+    return;
+  }
+
+  if (field.type === "theme") {
+    input = document.createElement("input");
+    input.type = "hidden";
+    input.value = field.value ?? field.options?.[0]?.value ?? "";
+    input.id = `field-${field.name}`;
+    input.dataset.name = field.name;
+
+    const grid = document.createElement("div");
+    grid.className = "theme-grid";
+    const buttons = (field.options ?? []).map((option) => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "theme-cell";
+      button.dataset.value = option.value;
+      button.innerHTML = `<span class="theme-swatch" style="background:linear-gradient(135deg,${option.backgroundStart},${option.backgroundEnd})"><i style="background:${option.accent}"></i></span><span>${option.label ?? option.value}</span>`;
+      button.addEventListener("click", () => {
+        input.value = option.value;
+        sync();
+      });
+      return button;
+    });
+
+    const sync = () => {
+      buttons.forEach((button) => {
+        const active = button.dataset.value === input.value;
+        button.classList.toggle("active", active);
+        button.setAttribute("aria-pressed", String(active));
+      });
+    };
+
+    sync();
+    grid.append(...buttons);
+    wrapper.append(input, grid);
+
+    if (field.hint) {
+      const hint = document.createElement("span");
+      hint.className = "hint";
+      hint.textContent = field.hint;
+      wrapper.append(hint);
+    }
+
     container.append(wrapper);
     return;
   }
@@ -392,7 +562,7 @@ const collectProps = () => {
   for (const field of state.composition.fields) {
     const input = document.getElementById(`field-${field.name}`);
     if (!input) continue;
-    if (field.type === "string" || field.type === "date") {
+    if (field.type === "string" || field.type === "date" || field.type === "icon" || field.type === "theme") {
       props[field.name] = input.value;
     } else if (field.type === "shape" || field.type === "seed") {
       props[field.name] = Number.parseInt(input.value, 10);
@@ -667,7 +837,11 @@ const init = async () => {
   setBusy(true);
   setStatus("Wczytuję kompozycje (pierwsze uruchomienie bundluje projekt)…", "busy");
   try {
-    const payload = await api("/api/compositions");
+    const [payload, iconsPayload] = await Promise.all([
+      api("/api/compositions"),
+      api("/api/icons").catch(() => ({icons: {}}))
+    ]);
+    state.iconPacks = Array.isArray(iconsPayload?.packs) ? iconsPayload.packs : [];
     state.shapeIndexSuggestion = Number.isInteger(payload.shapeIndexSuggestion) ? payload.shapeIndexSuggestion : null;
     state.currentSeed = Number.isInteger(payload.currentSeed) ? payload.currentSeed : null;
     state.seeds = Array.isArray(payload.seeds) ? payload.seeds : [];

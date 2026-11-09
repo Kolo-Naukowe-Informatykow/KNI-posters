@@ -5,6 +5,7 @@
  *   GET    /                     UI (formularz + lista zadan)
  *   GET    /api/health           stan serwera, wersja Remotion, status bundla
  *   GET    /api/compositions     kompozycje + opisy pol formularza
+ *   GET    /api/icons            paczka ikon (nazwa -> markup SVG)
  *   GET    /api/seeds            aktualny seed tla + historia
  *   POST   /api/seeds            {action: roll|back|select, seed?}
  *   GET    /api/jobs             historia zadan
@@ -21,6 +22,7 @@ import http from "node:http";
 import path from "node:path";
 import {randomInt} from "node:crypto";
 import {describeFields, sanitizeProps} from "./lib/fields.mjs";
+import {iconPacks} from "./lib/icons.mjs";
 import {RenderQueue} from "./lib/jobs.mjs";
 import {config, ensureOutDirs, listCompositions, prewarm, remotionVersion, repoRoot, runRender} from "./lib/renderer.mjs";
 import {createUiState} from "./lib/uiState.mjs";
@@ -249,6 +251,11 @@ const handle = async (request, response) => {
       lastShapeIndex: lastShapeIndex(),
       ...seedState()
     });
+    return;
+  }
+
+  if (route === "/api/icons" && method === "GET") {
+    sendJson(response, 200, {packs: iconPacks});
     return;
   }
 

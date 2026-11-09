@@ -1,0 +1,19 @@
+{
+  "packs": [
+    {
+      "id": "kni",
+      "label": "KNI",
+      "file": "kni-icons.json",
+      "viewBox": "0 0 64 64",
+      "render": "stroke",
+      "strokeWidth": 3
+    },
+    {
+      "id": "phosphor",
+      "label": "Phosphor",
+      "file": "phosphor-icons.json",
+      "viewBox": "0 0 256 256",
+      "render": "fill"
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "kni-robot": "<rect x=\"13\" y=\"17\" width=\"38\" height=\"27\" rx=\"7\"/><rect x=\"7\" y=\"25\" width=\"6\" height=\"12\" rx=\"3\"/><rect x=\"51\" y=\"25\" width=\"6\" height=\"12\" rx=\"3\"/><path d=\"M32 17V11\"/><circle cx=\"32\" cy=\"8\" r=\"3\" fill=\"currentColor\" stroke=\"none\"/><circle cx=\"25\" cy=\"30\" r=\"3\" fill=\"currentColor\" stroke=\"none\"/><circle cx=\"39\" cy=\"30\" r=\"3\" fill=\"currentColor\" stroke=\"none\"/><path d=\"M26 37h12\"/>",
+  "kni-gamepad": "<path d=\"M20 18h24a14 14 0 0 1 13.4 18l-2.6 8.6c-1.6 5-8 6.2-11.4 2l-4.6-5.6H25.2l-4.6 5.6c-3.4 4.2-9.8 3-11.4-2L6.6 36A14 14 0 0 1 20 18z\"/><path d=\"M20.5 25v10M15.5 30h10\"/><circle cx=\"43\" cy=\"27\" r=\"2.6\" fill=\"currentColor\" stroke=\"none\"/><circle cx=\"48\" cy=\"32\" r=\"2.6\" fill=\"currentColor\" stroke=\"none\"/>",
+  "kni-chat": "<path d=\"M14 15h36a7 7 0 0 1 7 7v18a7 7 0 0 1-7 7H30l-9 8v-8h-7a7 7 0 0 1-7-7V22a7 7 0 0 1 7-7z\"/><circle cx=\"23\" cy=\"31\" r=\"2.6\" fill=\"currentColor\" stroke=\"none\"/><circle cx=\"32\" cy=\"31\" r=\"2.6\" fill=\"currentColor\" stroke=\"none\"/><circle cx=\"41\" cy=\"31\" r=\"2.6\" fill=\"currentColor\" stroke=\"none\"/>",
+  "kni-shield": "<path d=\"M32 8l20 7v14c0 12-8.8 21.5-20 25-11.2-3.5-20-13-20-25V15z\"/><circle cx=\"32\" cy=\"29\" r=\"4.2\"/><path d=\"M32 33.2V42\"/>",
+  "kni-shapes": "<path d=\"M32 8l14 20H18z\"/><rect x=\"8\" y=\"36\" width=\"20\" height=\"20\" rx=\"3\"/><circle cx=\"45\" cy=\"46\" r=\"10\"/>"
+}

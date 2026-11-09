@@ -8,6 +8,7 @@
     "remotion:compositions": "remotion compositions src/index.ts",
     "remotion:still": "remotion still src/index.ts PostSpotkanieBase out/post-spotkanie-base.png --frame=0",
     "serve": "node server/index.mjs",
+    "icons:build": "node scripts/build-icon-pack.mjs",
     "browser:ensure": "node scripts/ensure-browser.mjs",
     "typecheck": "tsc --noEmit"
   },
@@ -31,6 +32,7 @@
     "remotion": "^4.0.441"
   },
   "devDependencies": {
+    "@phosphor-icons/core": "^2.1.1",
     "@types/node": "^25.5.0",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",

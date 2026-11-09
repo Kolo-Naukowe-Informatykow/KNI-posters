@@ -36,6 +36,10 @@ Stories, animacje i foldery `typst/` sa legacy — nie rozwijaj ich.
 - Ciemny gradient (granat/fiolet), gwiazdy, logo `logoKNI-text-white.svg`, duza godzina.
 - Hierarchia: godzina → dzien/data → temat → miejsce → stopka.
 - Jedno ciagle tlo na cala mozaike (bez szwow i winiet na brzegach kafelkow).
+- Ikona tematu (`icon`) w lewym gornym rogu, jednokolorowa, w kolorze palety (`theme`).
+  Domyslnie zestaw KNI (`src/core/icons/kni-icons.json`), do wyboru tez paczka Phosphor bold
+  (`src/core/icons/phosphor-icons.json`, `npm run icons:build`).
+- Naglowek sekcji (`sectionLabel`) pod logo dla spotkan sekcji; palety w `src/core/posts/postThemes.ts`.
 
 ## Render dowolnej kompozycji
 

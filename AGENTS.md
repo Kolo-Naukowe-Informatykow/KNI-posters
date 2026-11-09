@@ -30,6 +30,15 @@ Ten dokument definiuje standard tworzenia nowych materialow na Instagram dla Kol
 - `src/Root.tsx` mapuje `compositionRegistry` na `<Composition ... />`; nie dodawaj recznie osobnych `<Composition>` poza ta architektura.
 - Nie usuwaj istniejacych kompozycji bez wyraznego polecenia.
 - Dane tekstowe i warianty przekazuj przez `defaultProps` i silnie typowane propsy.
+- Temat spotkania zaznaczaj ikoną (`icon`) w lewym górnym rogu; ikona jest jednokolorowa
+  i bierze kolor z palety (`theme`). Domyślnie używaj zestawu KNI (`src/core/icons/kni-icons.json`):
+  `kni-robot`, `kni-gamepad`, `kni-chat`, `kni-shield`, `kni-shapes`. W pickerze jest też cała
+  paczka Phosphor w wariancie bold (`src/core/icons/phosphor-icons.json`, `npm run icons:build`).
+- Palety trzymaj w `src/core/posts/postThemes.ts` (`default`, `general`, `robotics`, `cyber`, `gamedev`).
+  Osobne spotkania sekcji mają własny kolor tła i akcentu, żeby były rozpoznawalne.
+- Nagłówek sekcji ustawiaj przez `sectionLabel` (np. `Sekcja robotyki`, `Redflag`); puste pole go ukrywa.
+- Gotowe szablony spotkań sekcji: `src/posts/post-sekcja-ogolna/`, `src/posts/post-sekcja-robotyka/`,
+  `src/posts/post-sekcja-gamedev/` i `src/posts/post-redflag/`.
 - Kazdy post ma `shapeIndex` (0-8) — numer kafelka ukladu 3x3 z `src/core/mosaic/mosaic.ts`.
   9 postow tworzy jeden obraz, wiec w jednej serii nie zmieniaj `seed` ani geometrii ukladu.
 - Kolejnosc publikacji idzie od najstarszego posta: numer 9 to `shapeIndex` 8 (prawy dolny rog

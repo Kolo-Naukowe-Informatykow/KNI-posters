@@ -2,6 +2,7 @@ import type React from "react";
 import {useMemo} from "react";
 import {MOSAIC_COLUMNS, MOSAIC_ROWS, MOSAIC_TILE, tileOf} from "../../core/mosaic/mosaic";
 import {buildSolarSystem} from "../../core/mosaic/solarSystem";
+import {POST_THEMES, type PostTheme} from "../../core/posts/postThemes";
 
 const WIDTH = 1080;
 const HEIGHT = 1350;
@@ -16,6 +17,8 @@ type Props = {
   shapeIndex: number;
   /** Ziarno generatora: ten sam seed = ten sam układ słoneczny. */
   seed: number;
+  /** Paleta sekcji: kolory gradientu i obiektów są wspólne dla całej mozaiki. */
+  palette?: PostTheme;
 };
 
 /**
@@ -25,10 +28,10 @@ type Props = {
  * a kafelek tylko przesuwa `viewBox`. Dzięki temu na styku kafelków nie ma szwu
  * ani ciemniejszej ramki — tło jest dokładnie ciągłe.
  */
-export const SolarSystemBackground: React.FC<Props> = ({shapeIndex, seed}) => {
+export const SolarSystemBackground: React.FC<Props> = ({shapeIndex, seed, palette = POST_THEMES.default}) => {
   const system = useMemo(() => buildSolarSystem(seed), [seed]);
   const {column, row} = tileOf(shapeIndex);
-  const idPrefix = `solar-${seed}-${column}-${row}`;
+  const idPrefix = `solar-${palette.glow.replace(/#/g, "")}-${seed}-${column}-${row}`;
 
   return (
     <svg
@@ -41,14 +44,14 @@ export const SolarSystemBackground: React.FC<Props> = ({shapeIndex, seed}) => {
       <defs>
         {/* Gradient ciągnięty przez całą mozaikę — sąsiednie kafelki mają ten sam kolor na styku. */}
         <linearGradient id={`${idPrefix}-base`} gradientUnits="userSpaceOnUse" x1="0" y1="0" x2={MOSAIC_WIDTH} y2={MOSAIC_HEIGHT}>
-          <stop offset="0%" stopColor="#1b1638" />
-          <stop offset="52%" stopColor="#101a33" />
-          <stop offset="100%" stopColor="#0b0b16" />
+          <stop offset="0%" stopColor={palette.backgroundStart} />
+          <stop offset="52%" stopColor={palette.backgroundMid} />
+          <stop offset="100%" stopColor={palette.backgroundEnd} />
         </linearGradient>
         <radialGradient id={`${idPrefix}-sun`}>
-          <stop offset="0%" stopColor="#ffe9f4" stopOpacity={0.22} />
-          <stop offset="45%" stopColor="#ffdbed" stopOpacity={0.08} />
-          <stop offset="100%" stopColor="#6c63ff" stopOpacity={0} />
+          <stop offset="0%" stopColor={palette.accent} stopOpacity={0.22} />
+          <stop offset="45%" stopColor={palette.accent} stopOpacity={0.08} />
+          <stop offset="100%" stopColor={palette.glow} stopOpacity={0} />
         </radialGradient>
       </defs>
 
@@ -66,7 +69,7 @@ export const SolarSystemBackground: React.FC<Props> = ({shapeIndex, seed}) => {
           cx={star.cx}
           cy={star.cy}
           r={star.radius}
-          fill={star.warm ? "#ffdbed" : "#ffffff"}
+          fill={star.warm ? palette.accent : "#ffffff"}
           opacity={star.warm ? 0.55 : 0.4}
         />
       ))}
@@ -90,7 +93,7 @@ export const SolarSystemBackground: React.FC<Props> = ({shapeIndex, seed}) => {
         cy={system.sun.cy}
         r={system.sun.coreRadius * 2.6}
         fill="none"
-        stroke="#ffdbed"
+        stroke={palette.accent}
         strokeOpacity={0.22}
         strokeWidth={1.6}
       />
@@ -99,7 +102,7 @@ export const SolarSystemBackground: React.FC<Props> = ({shapeIndex, seed}) => {
         cy={system.sun.cy}
         r={system.sun.coreRadius * 4.4}
         fill="none"
-        stroke="#ffdbed"
+        stroke={palette.accent}
         strokeOpacity={0.1}
         strokeWidth={1.2}
       />
@@ -109,12 +112,12 @@ export const SolarSystemBackground: React.FC<Props> = ({shapeIndex, seed}) => {
           return <circle key={body.key} cx={body.cx} cy={body.cy} r={body.radius} fill="#ffffff" opacity={0.3} />;
         }
         if (body.tone === "moon") {
-          return <circle key={body.key} cx={body.cx} cy={body.cy} r={body.radius} fill="#dfe6ff" opacity={0.5} />;
+          return <circle key={body.key} cx={body.cx} cy={body.cy} r={body.radius} fill={palette.accentSoft} opacity={0.5} />;
         }
         return (
           <g key={body.key}>
-            <circle cx={body.cx} cy={body.cy} r={body.radius * 2.4} fill="#ffdbed" opacity={0.09} />
-            <circle cx={body.cx} cy={body.cy} r={body.radius} fill="#ffe4f0" opacity={0.68} />
+            <circle cx={body.cx} cy={body.cy} r={body.radius * 2.4} fill={palette.accent} opacity={0.09} />
+            <circle cx={body.cx} cy={body.cy} r={body.radius} fill={palette.accentSoft} opacity={0.68} />
           </g>
         );
       })}

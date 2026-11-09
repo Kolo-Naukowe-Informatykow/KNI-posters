@@ -26,10 +26,13 @@ export class PostSpotkanieBasePost extends InstagramPostDefinition<PostSpotkanie
     dateISO: nextTuesdayISO(),
     time: "18:00",
     headline: "zapraszamy na cotygodniowe spotkanie KNI",
+    sectionLabel: "",
     topicLabel: "Temat",
     topicValue: "Spotkanie organizacyjne",
     locationLabel: "gdzie?",
     locationValue: "Wydział Matematyki\ni Informatyki, sala L9",
-    footer: "do zobaczenia!"
+    footer: "do zobaczenia!",
+    icon: "kni-chat",
+    theme: "default"
   };
 }
