@@ -103,8 +103,10 @@ temat, miejsce, stopka) i to samo, ciagle tlo rozpisane na mozaike 3x3:
   `kni-chat` (spotkania ogólne), `kni-shield` (Redflag), `kni-shapes` (matematyka).
   Do wyboru jest też cała paczka Phosphor w wariancie bold (`src/core/icons/phosphor-icons.json`,
   `npm run icons:build`). Rysuje je `src/components/icons/TopicIcon.tsx`.
-- `theme` — paleta z `src/core/posts/postThemes.ts`: `default` (tematy), `general` (spotkania ogólne),
-  `robotics` (bursztyn), `cyber` (Redflag, czerwień), `gamedev` (zieleń). Paleta zmienia też tło mozaiki.
+- `theme` — paleta z `src/core/posts/post-themes.json` (czytana przez `postThemes.ts`):
+  `default` (tematy), `general` (spotkania ogólne), `robotics` (bursztyn), `cyber` (Redflag, czerwień),
+  `gamedev` (zieleń). Paleta zmienia też tło mozaiki. Ustawiasz ją w definicji kompozycji —
+  w formularzu nie ma osobnego wyboru, bo kolor wynika z wybranego szablonu spotkania.
 - `sectionLabel` — nagłówek sekcji pod logo (`Sekcja robotyki`, `Redflag`); puste pole ukrywa nagłówek.
 
 Szablony spotkań sekcji:
@@ -114,8 +116,9 @@ Szablony spotkań sekcji:
 - `PostSekcjaGamedev` — środy, 18:00, sala L9 (`src/posts/post-sekcja-gamedev/`); godzina i sala do potwierdzenia,
 - `PostRedflag` — czwartki, 18:00, sala L9 (`src/posts/post-redflag/`); godzina i sala do potwierdzenia.
 
-W generatorze `icon` to picker z wyszukiwarką (zestaw KNI + cała paczka Phosphor), `theme` to kafelki
-z podglądem kolorów, a `sectionLabel` zwykłe pole tekstowe.
+W generatorze kompozycję wybierasz kafelkami (podgląd ikony, nazwa sekcji, godzina i sala),
+`icon` to picker z wyszukiwarką (zestaw KNI + cała paczka Phosphor), a `sectionLabel` zwykłe pole
+tekstowe. `PostSpotkanieBase` jest ukryty w generatorze — zostaje jako szablon techniczny.
 
 ## Czcionki
 
@@ -138,6 +141,7 @@ Linux nie ma czcionek Segoe UI ani Trebuchet MS.
 - `src/core/dates/plDate.ts`
 - `src/core/fonts/kniFonts.ts`
 - `src/core/posts/postThemes.ts`
+- `src/core/posts/post-themes.json`
 - `src/core/icons/icon-packs.json`
 - `src/core/icons/kni-icons.json`
 - `src/core/icons/phosphor-icons.json`
@@ -162,6 +166,8 @@ Pola formularza:
 
 - **Kafelek układu** — siatka 3x3. 9 postów tworzy jeden obraz w siatce Instagrama; generator
   pamięta ostatnio wygenerowany kafelek (`out/ui-state.json`) i domyślnie podpowiada następny.
+  Numer przesuwa się dopiero po **Renderuj PNG** — podgląd nie zużywa kafelka. Wybór i podpowiedź
+  przechodzą też między kompozycjami bazowymi.
   Numeracja idzie od 9 do 1: najstarszy post to 9 i trafia w prawy dolny róg siatki, a kolejne
   posty (8, 7, ... 1) dokładają się przed nim — dlatego generator schodzi z kafelka 8 do 0.
 - **Ziarno tła** — liczba, z której generator buduje układ słoneczny. Przycisk **Nowe tło**

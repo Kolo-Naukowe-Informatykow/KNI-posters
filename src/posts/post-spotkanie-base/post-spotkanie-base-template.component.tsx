@@ -27,6 +27,8 @@ export type PostSpotkanieBaseProps = {
   theme?: PostThemeName;
   /** Nagłówek sekcji pod logo, np. `Sekcja robotyki` albo `Redflag`. */
   sectionLabel?: string;
+  /** Nazwa kafelka w generatorze; nie trafia na plakat. */
+  previewTitle?: string;
 };
 
 /**

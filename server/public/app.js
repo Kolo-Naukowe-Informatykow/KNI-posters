@@ -13,7 +13,8 @@ const STATUS_LABELS = {
 };
 const POLL_ACTIVE_MS = 1500;
 const POLL_IDLE_MS = 8000;
-const PREFERRED_COMPOSITION_ID = "PostSpotkanieBase";
+/** Kompozycje techniczne, których nie pokazujemy w generatorze (zostają w Remotion Studio). */
+const HIDDEN_COMPOSITION_IDS = new Set(["PostSpotkanieBase"]);
 const PL_MONTHS = [
   "stycznia",
   "lutego",
@@ -37,6 +38,7 @@ const state = {
   cards: new Map(),
   timer: null,
   shapeIndexSuggestion: null,
+  shapeIndex: null,
   currentSeed: null,
   seeds: [],
   iconPacks: []
@@ -137,7 +139,7 @@ const iconLabel = (name) =>
 const buildField = (field, container, advanced) => {
   const wrapper = document.createElement("div");
   wrapper.className =
-    field.wide || field.multiline || field.type === "date" || field.type === "shape" || field.type === "icon" || field.type === "theme"
+    field.wide || field.multiline || field.type === "date" || field.type === "shape" || field.type === "icon"
       ? "field wide"
       : "field";
 
@@ -214,8 +216,11 @@ const buildField = (field, container, advanced) => {
     input = document.createElement("input");
     input.type = "hidden";
     const suggested = state.shapeIndexSuggestion;
-    const initial =
-      state.composition.id === PREFERRED_COMPOSITION_ID && Number.isInteger(suggested) ? suggested : field.value ?? 0;
+    const initial = Number.isInteger(state.shapeIndex)
+      ? state.shapeIndex
+      : Number.isInteger(suggested)
+        ? suggested
+        : field.value ?? 0;
     input.value = String(initial);
 
     const grid = document.createElement("div");
@@ -238,6 +243,7 @@ const buildField = (field, container, advanced) => {
       button.textContent = String(index + 1);
       button.addEventListener("click", () => {
         input.value = String(index);
+        state.shapeIndex = index;
         sync();
       });
       buttons.push(button);
@@ -263,7 +269,7 @@ const buildField = (field, container, advanced) => {
     input = document.createElement("input");
     input.type = "date";
     const fallbackDate = /^\d{4}-\d{2}-\d{2}$/.test(field.value ?? "") ? field.value : nextTuesdayISO();
-    input.value = state.composition.id === PREFERRED_COMPOSITION_ID ? nextTuesdayISO() : fallbackDate;
+    input.value = fallbackDate;
 
     const dayButton = (text, getDate) => {
       const button = document.createElement("button");
@@ -362,51 +368,6 @@ const buildField = (field, container, advanced) => {
     sync();
     picker.append(search, grid, status);
     wrapper.append(input, picker);
-
-    if (field.hint) {
-      const hint = document.createElement("span");
-      hint.className = "hint";
-      hint.textContent = field.hint;
-      wrapper.append(hint);
-    }
-
-    container.append(wrapper);
-    return;
-  }
-
-  if (field.type === "theme") {
-    input = document.createElement("input");
-    input.type = "hidden";
-    input.value = field.value ?? field.options?.[0]?.value ?? "";
-    input.id = `field-${field.name}`;
-    input.dataset.name = field.name;
-
-    const grid = document.createElement("div");
-    grid.className = "theme-grid";
-    const buttons = (field.options ?? []).map((option) => {
-      const button = document.createElement("button");
-      button.type = "button";
-      button.className = "theme-cell";
-      button.dataset.value = option.value;
-      button.innerHTML = `<span class="theme-swatch" style="background:linear-gradient(135deg,${option.backgroundStart},${option.backgroundEnd})"><i style="background:${option.accent}"></i></span><span>${option.label ?? option.value}</span>`;
-      button.addEventListener("click", () => {
-        input.value = option.value;
-        sync();
-      });
-      return button;
-    });
-
-    const sync = () => {
-      buttons.forEach((button) => {
-        const active = button.dataset.value === input.value;
-        button.classList.toggle("active", active);
-        button.setAttribute("aria-pressed", String(active));
-      });
-    };
-
-    sync();
-    grid.append(...buttons);
-    wrapper.append(input, grid);
 
     if (field.hint) {
       const hint = document.createElement("span");
@@ -530,31 +491,54 @@ const selectComposition = (id) => {
   const composition = state.compositionsById.get(id);
   if (!composition) return;
   state.composition = composition;
+  const container = element("compositions");
+  for (const button of container.querySelectorAll(".composition-cell")) {
+    const active = button.dataset.id === id;
+    button.classList.toggle("active", active);
+    button.setAttribute("aria-pressed", String(active));
+  }
   renderForm();
 };
 
 const fillCompositions = (compositions) => {
   state.compositionsById = new Map(compositions.map((composition) => [composition.id, composition]));
-  const select = element("composition");
-  select.innerHTML = "";
+  const container = element("compositions");
+  container.innerHTML = "";
 
-  // Generator robi posty — stories zostają w repo, ale nie zaśmiecają wyboru.
-  const posts = compositions.filter((composition) => composition.format === "post");
+  // Generator robi posty — stories zostają w repo, a kompozycje techniczne są ukryte.
+  const posts = compositions.filter(
+    (composition) => composition.format === "post" && !HIDDEN_COMPOSITION_IDS.has(composition.id)
+  );
   const visible = posts.length > 0 ? posts : compositions;
 
-  const group = document.createElement("optgroup");
-  group.label = "Posty";
-  select.append(group);
-
   for (const composition of visible) {
-    const option = document.createElement("option");
-    option.value = composition.id;
-    option.textContent = composition.id;
-    group.append(option);
+    const preview = composition.preview ?? {};
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "composition-cell";
+    button.dataset.id = composition.id;
+    button.title = composition.id;
+
+    const swatch = document.createElement("span");
+    swatch.className = "composition-swatch";
+    swatch.style.background = `linear-gradient(135deg, ${preview.backgroundStart ?? "#1b1638"}, ${preview.backgroundEnd ?? "#0b0b16"})`;
+    swatch.style.color = preview.accent ?? "#ffdbed";
+    swatch.innerHTML = iconPreview(preview.icon);
+
+    const name = document.createElement("span");
+    name.className = "composition-name";
+    name.textContent = preview.title ?? composition.id;
+
+    const meta = document.createElement("span");
+    meta.className = "composition-meta";
+    meta.textContent = preview.subtitle ?? "";
+
+    button.append(swatch, name, meta);
+    button.addEventListener("click", () => selectComposition(composition.id));
+    container.append(button);
   }
 
-  const preferred = visible.find((composition) => composition.id === PREFERRED_COMPOSITION_ID) ?? visible[0];
-  selectComposition(preferred?.id);
+  selectComposition(visible[0]?.id);
 };
 
 const collectProps = () => {
@@ -562,7 +546,7 @@ const collectProps = () => {
   for (const field of state.composition.fields) {
     const input = document.getElementById(`field-${field.name}`);
     if (!input) continue;
-    if (field.type === "string" || field.type === "date" || field.type === "icon" || field.type === "theme") {
+    if (field.type === "string" || field.type === "date" || field.type === "icon") {
       props[field.name] = input.value;
     } else if (field.type === "shape" || field.type === "seed") {
       props[field.name] = Number.parseInt(input.value, 10);
@@ -599,7 +583,7 @@ const submitJob = async (kind) => {
       state.seeds = Array.isArray(payload.seeds) ? payload.seeds : state.seeds;
     }
     await refresh();
-    if (Number.isInteger(renderedShape) && renderedShape === 0) {
+    if (kind === "still" && renderedShape === 0) {
       setStatus("Układ gotowy (9/9) — możesz wylosować nowe tło", "ok");
     }
   } catch (error) {
@@ -614,6 +598,7 @@ const applyShapeSuggestion = () => {
   const input = element("field-shapeIndex");
   const suggestion = state.shapeIndexSuggestion;
   if (!input || !Number.isInteger(suggestion)) return;
+  state.shapeIndex = suggestion;
   input.value = String(suggestion);
   const grid = input.parentElement?.querySelector(".shape-grid");
   if (grid) {
@@ -830,7 +815,6 @@ const refresh = async () => {
 };
 
 const init = async () => {
-  element("composition").addEventListener("change", (event) => selectComposition(event.target.value));
   element("preview").addEventListener("click", () => void submitJob("preview"));
   element("still").addEventListener("click", () => void submitJob("still"));
 
@@ -843,6 +827,7 @@ const init = async () => {
     ]);
     state.iconPacks = Array.isArray(iconsPayload?.packs) ? iconsPayload.packs : [];
     state.shapeIndexSuggestion = Number.isInteger(payload.shapeIndexSuggestion) ? payload.shapeIndexSuggestion : null;
+    state.shapeIndex = state.shapeIndexSuggestion;
     state.currentSeed = Number.isInteger(payload.currentSeed) ? payload.currentSeed : null;
     state.seeds = Array.isArray(payload.seeds) ? payload.seeds : [];
     fillCompositions(payload.compositions);

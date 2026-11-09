@@ -2,12 +2,12 @@
  * Opisy pól formularza dla propsów kompozycji Remotion.
  *
  * Formularz wystawia TYLKO propsy skalarne (string / number / boolean) oraz pola
- * specjalne: `date` (kalendarz), `shape` (kafelek mozaiki), `seed` (ziarno tła),
- * `icon` (picker ikon z wyszukiwarką) i `theme` (kafelki kolorystyki).
- * Reszta propsów (np. tablica `slides` z obrazkami w PostTFNiS) zostaje z
- * `defaultProps` kompozycji, bo Remotion płasko scala `defaultProps` z propsami
- * przekazanymi do renderu (zweryfikowane empirycznie: `--props` / `inputProps`
- * nadpisują tylko podane klucze, reszta pochodzi z `defaultProps`).
+ * specjalne: `date` (kalendarz), `shape` (kafelek mozaiki), `seed` (ziarno tła)
+ * i `icon` (picker ikon z wyszukiwarką).
+ * Reszta propsów (np. `theme` albo tablice obiektów) zostaje z `defaultProps`
+ * kompozycji, bo Remotion płasko scala `defaultProps` z propsami przekazanymi do
+ * renderu (zweryfikowane empirycznie: `--props` / `inputProps` nadpisują tylko
+ * podane klucze, reszta pochodzi z `defaultProps`).
  */
 
 import {iconNames, isKnownIcon} from "./icons.mjs";
@@ -28,7 +28,6 @@ const LABELS = {
   footer: "Stopka",
   sectionLabel: "Nagłówek sekcji",
   icon: "Ikona tematu",
-  theme: "Kolorystyka",
   dateTimeLabel: "Data i godzina"
 };
 
@@ -46,7 +45,6 @@ const HINTS = {
   footer: "np. serdecznie zapraszamy!",
   sectionLabel: "np. Sekcja robotyki albo Redflag (puste = brak nagłówka)",
   icon: "Ikona w lewym górnym rogu; szukaj po nazwie (np. kni, shield, gamepad)",
-  theme: "Kolor tła i akcentu sekcji",
   dateTimeLabel: "np. 25.04.2026, 10:00-16:00"
 };
 
@@ -61,7 +59,6 @@ const ORDER = [
   "headline",
   "sectionLabel",
   "icon",
-  "theme",
   "topicLabel",
   "topicValue",
   "locationLabel",
@@ -81,52 +78,8 @@ const SEED_FIELDS = new Set(["seed"]);
 /** Pola zajmujące całą szerokość formularza (dłuższe teksty). */
 const WIDE_FIELDS = new Set(["headline"]);
 
-/**
- * Ikony tematu pochodza z paczki Lucide (`src/core/icons/lucide-icons.json`).
- * UI pokazuje je jako picker z wyszukiwarka; liste wartosci waliduje `isKnownIcon`.
- */
-const THEME_OPTIONS = [
-  {
-    value: "default",
-    label: "Domyślna",
-    accent: "#ffdbed",
-    glow: "#6c63ff",
-    backgroundStart: "#1b1638",
-    backgroundEnd: "#0b0b16"
-  },
-  {
-    value: "general",
-    label: "Ogólna",
-    accent: "#cfe3ff",
-    glow: "#4f9dff",
-    backgroundStart: "#10213a",
-    backgroundEnd: "#08121b"
-  },
-  {
-    value: "robotics",
-    label: "Robotyka",
-    accent: "#ffd6a0",
-    glow: "#ff8a3d",
-    backgroundStart: "#2b1c12",
-    backgroundEnd: "#0b0a12"
-  },
-  {
-    value: "cyber",
-    label: "Redflag",
-    accent: "#ffb3bd",
-    glow: "#ff3d5a",
-    backgroundStart: "#2a1220",
-    backgroundEnd: "#0b0a12"
-  },
-  {
-    value: "gamedev",
-    label: "Gamedev",
-    accent: "#c6f5b0",
-    glow: "#48d17a",
-    backgroundStart: "#12291c",
-    backgroundEnd: "#080f0b"
-  }
-];
+/** Propsy techniczne: nie pokazujemy ich w formularzu (kolory ustawia definicja kompozycji). */
+const INTERNAL_FIELDS = new Set(["theme", "previewTitle"]);
 
 const label = (name) =>
   LABELS[name] ??
@@ -145,6 +98,8 @@ export const describeFields = (defaultProps = {}) => {
   const fields = [];
 
   for (const [name, value] of Object.entries(defaultProps)) {
+    if (INTERNAL_FIELDS.has(name)) continue;
+
     if (typeof value === "string") {
       if (DATE_FIELDS.has(name)) {
         fields.push({name, label: label(name), type: "date", value, hint: HINTS[name]});
@@ -159,10 +114,6 @@ export const describeFields = (defaultProps = {}) => {
           count: iconNames.length,
           hint: HINTS[name]
         });
-        continue;
-      }
-      if (name === "theme") {
-        fields.push({name, label: label(name), type: "theme", value, options: THEME_OPTIONS, hint: HINTS[name]});
         continue;
       }
       fields.push({
@@ -260,12 +211,6 @@ export const sanitizeProps = (fields, rawProps) => {
     } else if (field.type === "icon") {
       if (!isKnownIcon(rawValue)) {
         errors.push(`Pole ${name} musi być ikoną z paczki`);
-        continue;
-      }
-      result[name] = rawValue;
-    } else if (field.type === "theme") {
-      if (typeof rawValue !== "string" || !field.options.some((option) => option.value === rawValue)) {
-        errors.push(`Pole ${name} musi być jedną z dozwolonych wartości`);
         continue;
       }
       result[name] = rawValue;

@@ -35,6 +35,7 @@ Wstęp wolny, nie trzeba się zapisywać.
     time: "18:00",
     headline: "cotygodniowe spotkanie ogólne KNI",
     sectionLabel: "",
+    previewTitle: "Spotkanie ogólne",
     topicLabel: "Temat",
     topicValue: "Temat tygodnia",
     locationLabel: "gdzie?",

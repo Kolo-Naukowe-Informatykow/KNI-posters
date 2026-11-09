@@ -34,7 +34,7 @@ Ten dokument definiuje standard tworzenia nowych materialow na Instagram dla Kol
   i bierze kolor z palety (`theme`). Domyślnie używaj zestawu KNI (`src/core/icons/kni-icons.json`):
   `kni-robot`, `kni-gamepad`, `kni-chat`, `kni-shield`, `kni-shapes`. W pickerze jest też cała
   paczka Phosphor w wariancie bold (`src/core/icons/phosphor-icons.json`, `npm run icons:build`).
-- Palety trzymaj w `src/core/posts/postThemes.ts` (`default`, `general`, `robotics`, `cyber`, `gamedev`).
+- Palety trzymaj w `src/core/posts/post-themes.json` (`default`, `general`, `robotics`, `cyber`, `gamedev`).
   Osobne spotkania sekcji mają własny kolor tła i akcentu, żeby były rozpoznawalne.
 - Nagłówek sekcji ustawiaj przez `sectionLabel` (np. `Sekcja robotyki`, `Redflag`); puste pole go ukrywa.
 - Gotowe szablony spotkań sekcji: `src/posts/post-sekcja-ogolna/`, `src/posts/post-sekcja-robotyka/`,

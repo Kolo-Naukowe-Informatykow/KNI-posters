@@ -248,44 +248,56 @@ button.chip {
   color: #ffffff;
 }
 
-.theme-grid {
+.composition-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
-  gap: 8px;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 10px;
 }
 
-.theme-cell {
+.composition-cell {
   display: flex;
   flex-direction: column;
-  align-items: stretch;
-  gap: 6px;
-  padding: 8px;
-  border-radius: 10px;
+  gap: 8px;
+  padding: 10px;
+  border-radius: 12px;
   background: var(--card-2);
+  text-align: left;
   color: var(--muted);
-  font-size: 12px;
-  text-align: center;
 }
 
-.theme-swatch {
+.composition-swatch {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 40px;
-  border-radius: 8px;
+  height: 78px;
+  border-radius: 9px;
   border: 1px solid var(--border);
 }
 
-.theme-swatch i {
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
+.composition-swatch svg {
+  width: 42px;
+  height: 42px;
 }
 
-.theme-cell.active {
-  border-color: var(--accent);
+.composition-name {
   color: var(--text);
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 1.2;
+}
+
+.composition-meta {
+  font-size: 12px;
+  line-height: 1.3;
+}
+
+.composition-cell.active {
+  border-color: var(--accent);
   box-shadow: inset 0 0 0 1px var(--accent);
+}
+
+.composition-cell.active .composition-name {
+  color: var(--text);
 }
 
 textarea {

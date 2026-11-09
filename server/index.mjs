@@ -23,6 +23,7 @@ import path from "node:path";
 import {randomInt} from "node:crypto";
 import {describeFields, sanitizeProps} from "./lib/fields.mjs";
 import {iconPacks} from "./lib/icons.mjs";
+import {resolveTheme} from "./lib/themes.mjs";
 import {RenderQueue} from "./lib/jobs.mjs";
 import {config, ensureOutDirs, listCompositions, prewarm, remotionVersion, repoRoot, runRender} from "./lib/renderer.mjs";
 import {createUiState} from "./lib/uiState.mjs";
@@ -172,6 +173,8 @@ const compositionPayload = async () => {
   const compositions = await listCompositions();
   bundleReady = true;
   return compositions.map((composition) => {
+    const props = composition.defaultProps ?? {};
+    const theme = resolveTheme(props.theme);
     const fields = describeFields(composition.defaultProps);
     return {
       id: composition.id,
@@ -181,6 +184,16 @@ const compositionPayload = async () => {
       durationInFrames: composition.durationInFrames,
       durationSeconds: Number((composition.durationInFrames / composition.fps).toFixed(2)),
       format: composition.width === 1080 && composition.height === 1920 ? "story" : "post",
+      preview: {
+        title: [props.previewTitle, props.sectionLabel]
+          .map((value) => String(value ?? "").trim())
+          .find(Boolean) || composition.id,
+        subtitle: [props.time, String(props.locationValue ?? "").split("\n")[0].trim()].filter(Boolean).join(" · "),
+        icon: props.icon ?? "",
+        accent: theme.accent ?? "",
+        backgroundStart: theme.backgroundStart ?? "",
+        backgroundEnd: theme.backgroundEnd ?? ""
+      },
       fields,
       editable: fields.filter((field) => !field.advanced && field.type === "string").length,
       advanced: fields.filter((field) => field.advanced).length
@@ -339,7 +352,8 @@ const handle = async (request, response) => {
       scale: kind === "video" ? null : scale
     });
 
-    if (Number.isInteger(props.shapeIndex)) {
+    // Kafelek przesuwa się dopiero po pełnym PNG — podgląd nie zużywa numeru.
+    if (kind === "still" && Number.isInteger(props.shapeIndex)) {
       uiState.write({lastShapeIndex: props.shapeIndex});
     }
     if (Number.isInteger(props.seed)) {
@@ -348,7 +362,7 @@ const handle = async (request, response) => {
 
     sendJson(response, 202, {
       job: queue.get(job.id),
-      shapeIndexSuggestion: nextShapeIndex(),
+      shapeIndexSuggestion: kind === "still" ? nextShapeIndex() : null,
       ...seedState()
     });
     return;
