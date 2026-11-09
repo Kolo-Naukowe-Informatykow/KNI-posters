@@ -9,6 +9,13 @@
       "strokeWidth": 3
     },
     {
+      "id": "brand",
+      "label": "Znaki sekcji",
+      "file": "kni-brand-icons.json",
+      "viewBox": "0 0 64 64",
+      "render": "fill"
+    },
+    {
       "id": "phosphor",
       "label": "Phosphor",
       "file": "phosphor-icons.json",
