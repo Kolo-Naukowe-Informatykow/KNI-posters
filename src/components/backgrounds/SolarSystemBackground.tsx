@@ -1,16 +1,17 @@
 import type React from "react";
 import {useMemo} from "react";
-import {MOSAIC_COLUMNS, MOSAIC_ROWS, MOSAIC_TILE, tileOf} from "../../core/mosaic/mosaic";
+import {
+  MOSAIC_CROP_X,
+  MOSAIC_HEIGHT,
+  MOSAIC_PITCH_X,
+  MOSAIC_PITCH_Y,
+  MOSAIC_POST_HEIGHT,
+  MOSAIC_POST_WIDTH,
+  MOSAIC_WIDTH,
+  tileOf
+} from "../../core/mosaic/mosaic";
 import {buildSolarSystem} from "../../core/mosaic/solarSystem";
 import {POST_THEMES, type PostTheme} from "../../core/posts/postThemes";
-
-const WIDTH = 1080;
-const HEIGHT = 1350;
-const MOSAIC_WIDTH = MOSAIC_COLUMNS * MOSAIC_TILE;
-const MOSAIC_HEIGHT = MOSAIC_ROWS * MOSAIC_TILE;
-
-/** Kwadrat widoczny w siatce Instagrama (kadr 4:5 jest przycinany do środka). */
-export const CROP_TOP = 135;
 
 type Props = {
   /** Kafelek mozaiki 0-8 — 9 postów tworzy jeden układ. */
@@ -25,8 +26,10 @@ type Props = {
  * Tło postu: wycinek jednego, globalnego obrazu rozpiętego na mozaikę 3x3.
  *
  * Gradient, gwiazdy i układ słoneczny są liczone w jednych współrzędnych mozaiki,
- * a kafelek tylko przesuwa `viewBox`. Dzięki temu na styku kafelków nie ma szwu
- * ani ciemniejszej ramki — tło jest dokładnie ciągłe.
+ * a kafelek tylko przesuwa `viewBox`. Uwzględniamy przy tym realia profilu: Instagram
+ * pokazuje 4:5 w siatce 3:4 (obcina boki) i zostawia odstęp między postami, więc
+ * `viewBox` startuje o `MOSAIC_CROP_X` wcześniej, a kolejne kafelki są o `MOSAIC_GAP`
+ * dalej od siebie. W efekcie w siatce nie ma szwu ani przesunięcia na styku.
  */
 export const SolarSystemBackground: React.FC<Props> = ({shapeIndex, seed, palette = POST_THEMES.default}) => {
   const system = useMemo(() => buildSolarSystem(seed), [seed]);
@@ -35,9 +38,9 @@ export const SolarSystemBackground: React.FC<Props> = ({shapeIndex, seed, palett
 
   return (
     <svg
-      width={WIDTH}
-      height={HEIGHT}
-      viewBox={`${column * MOSAIC_TILE} ${row * MOSAIC_TILE - CROP_TOP} ${WIDTH} ${HEIGHT}`}
+      width={MOSAIC_POST_WIDTH}
+      height={MOSAIC_POST_HEIGHT}
+      viewBox={`${column * MOSAIC_PITCH_X - MOSAIC_CROP_X} ${row * MOSAIC_PITCH_Y} ${MOSAIC_POST_WIDTH} ${MOSAIC_POST_HEIGHT}`}
       style={{position: "absolute", inset: 0, pointerEvents: "none"}}
       aria-hidden="true"
     >

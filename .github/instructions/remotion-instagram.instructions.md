@@ -25,6 +25,8 @@ Stories, animacje i foldery `typst/` sa legacy — nie rozwijaj ich.
    od 9 (najstarszy, `shapeIndex` 8) do 1 (`shapeIndex` 0), wiec kolejny kafelek to `shapeIndex - 1`.
 7. Uklad rysuj w jednych wspolnych wspolrzednych mozaiki i przesuwaj tylko `viewBox` —
    zadnych gradientow ani winiet liczonych per kafelek (na styku bylby szew).
+   `viewBox` liczy `MOSAIC_PITCH_X/Y` i `MOSAIC_CROP_X` z `mosaic.ts`, bo Instagram obcina boki
+   posta 4:5 (siatka 3:4) i zostawia odstep `MOSAIC_GAP` miedzy kafelkami.
 7. Preferuj logo z `assets/` zamiast dodawania nowych wariantow.
 8. Opis publikacyjny trzymaj w polu `caption` definicji oraz w pliku `.opis.md`.
 9. Zdjecia sa opcjonalne — post tekstowy jest OK.

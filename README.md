@@ -93,6 +93,10 @@ temat, miejsce, stopka) i to samo, ciagle tlo rozpisane na mozaike 3x3:
   brzegów — wszystko liczone jest w jednych współrzędnych mozaiki.
 - `src/core/mosaic/solarSystem.ts` buduje układ z `seed` (deterministyczny generator), a
   `src/core/mosaic/mosaic.ts` mapuje `shapeIndex` 0-8 na kolumnę i wiersz siatki.
+- Geometria mozaiki odpowiada temu, co naprawdę widać na profilu: Instagram pokazuje posty 4:5
+  w siatce 3:4 (przycina boki) i zostawia odstęp między kafelkami. Stałe `MOSAIC_GRID_ASPECT`,
+  `MOSAIC_CROP_X`, `MOSAIC_GAP` oraz `MOSAIC_PITCH_X/Y` w `mosaic.ts` uwzględniają oba efekty,
+  więc sąsiednie posty schodzą się w siatce co do piksela.
 - Orbity są cienkie i przygaszone, a słońce nie ma jasnego rdzenia (na środku kafelka leży tekst),
   żeby wzór nie psuł czytelności.
 

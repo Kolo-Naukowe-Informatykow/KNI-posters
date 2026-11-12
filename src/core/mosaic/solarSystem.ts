@@ -4,19 +4,19 @@
  * Ten sam seed daje zawsze ten sam obraz, a każdy kafelek pokazuje tylko swoje okno.
  * Linie są cienkie i przygaszone, żeby nie konkurowały z tekstem postu.
  */
-import {MOSAIC_CENTER, MOSAIC_TILE} from "./mosaic";
+import {localInTile, MOSAIC_CENTER, MOSAIC_HEIGHT, MOSAIC_WIDTH} from "./mosaic";
 
 type Point = [number, number];
 
 /**
  * Strefa, w której na każdym kafelku leży tekst (logo, godzina, temat, miejsce, stopka).
- * Planety i księżyce omijają ten obszar, żeby nie wyglądały jak kropki w zdaniu.
+ * Współrzędne są lokalne dla widocznego kafelka — planety i księżyce omijają ten obszar,
+ * żeby nie wyglądały jak kropki w zdaniu.
  */
-const TEXT_ZONE = {x0: 30, x1: 1050, y0: 330, y1: 1080};
+const TEXT_ZONE = {x0: 30, x1: 985, y0: 340, y1: 1245};
 
 const inTextZone = ([x, y]: Point): boolean => {
-  const localX = ((x % MOSAIC_TILE) + MOSAIC_TILE) % MOSAIC_TILE;
-  const localY = ((y % MOSAIC_TILE) + MOSAIC_TILE) % MOSAIC_TILE;
+  const [localX, localY] = localInTile(x, y);
   return localX > TEXT_ZONE.x0 && localX < TEXT_ZONE.x1 && localY > TEXT_ZONE.y0 && localY < TEXT_ZONE.y1;
 };
 
@@ -167,8 +167,8 @@ export const buildSolarSystem = (rawSeed: number): SolarSystem => {
   for (let index = 0; index < 90; index += 1) {
     stars.push({
       key: `star-${index}`,
-      cx: random() * 3240,
-      cy: random() * 3240,
+      cx: random() * MOSAIC_WIDTH,
+      cy: random() * MOSAIC_HEIGHT,
       radius: 0.9 + random() * 1.9,
       warm: random() > 0.72
     });

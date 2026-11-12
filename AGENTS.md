@@ -43,6 +43,8 @@ Ten dokument definiuje standard tworzenia nowych materialow na Instagram dla Kol
   `src/posts/post-sekcja-gamedev/` i `src/posts/post-redflag/`.
 - Kazdy post ma `shapeIndex` (0-8) — numer kafelka ukladu 3x3 z `src/core/mosaic/mosaic.ts`.
   9 postow tworzy jeden obraz, wiec w jednej serii nie zmieniaj `seed` ani geometrii ukladu.
+  Mozaika jest liczona pod realia profilu: siatka Instagrama ma proporcje 3:4 (boki posta 4:5
+  sa przycinane), a miedzy kafelkami jest cienki odstep (`MOSAIC_GAP` w `mosaic.ts`).
 - Kolejnosc publikacji idzie od najstarszego posta: numer 9 to `shapeIndex` 8 (prawy dolny rog
   siatki), potem 8, 7, ... az do 1 (`shapeIndex` 0). Generator sam podpowiada nastepny kafelek w dol.
 - `id` kompozycji musi byc unikalny i zgodny z nazwa pliku (np. `PostSpotkanieBase`).
@@ -88,6 +90,9 @@ Ten dokument definiuje standard tworzenia nowych materialow na Instagram dla Kol
   `src/core/mosaic/solarSystem.ts`: jeden globalny obraz (gradient + gwiazdy + slonce, orbity,
   planety, pas planetoid) rozpisany na siatke 3x3. Post przesuwa tylko `viewBox`, wiec tlo jest
   ciagle — bez szwow i przyciemnionych brzegow na styku kafelkow.
+- `src/core/mosaic/mosaic.ts` trzyma realia siatki Instagrama: `MOSAIC_GRID_ASPECT` (3:4),
+  `MOSAIC_CROP_X` (ile bokow posta obcina profil) i `MOSAIC_GAP` (odstep miedzy postami).
+  `MOSAIC_PITCH_X/Y` to odleglosc miedzy poczatkami kafelkow — zmieniaj je tylko razem z geometria.
 - Orbity sa cienkie i przygaszone, slonce nie ma jasnego rdzenia (na srodku kafelka lezy tekst),
   zeby uklad nie psul czytelnosci.
 - Unikaj emotek i zbyt formalnego tonu.
