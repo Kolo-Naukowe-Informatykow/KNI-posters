@@ -14,15 +14,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/6ajmon/KNI-posters.git"
+    "url": "git+https://github.com/Kolo-Naukowe-Informatykow/KNI-posters.git"
   },
   "keywords": [],
   "author": "Koło Naukowe Informatyków",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/6ajmon/KNI-posters/issues"
+    "url": "https://github.com/Kolo-Naukowe-Informatykow/KNI-posters/issues"
   },
-  "homepage": "https://github.com/6ajmon/KNI-posters#readme",
+  "homepage": "https://github.com/Kolo-Naukowe-Informatykow/KNI-posters#readme",
   "dependencies": {
     "@remotion/bundler": "^4.0.441",
     "@remotion/cli": "^4.0.441",
