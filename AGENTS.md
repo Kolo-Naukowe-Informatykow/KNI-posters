@@ -6,15 +6,13 @@ Ten dokument definiuje standard tworzenia nowych materialow na Instagram dla Kol
 
 - Tworzymy statyczne posty na Instagram w Remotion (React + TypeScript), `1080x1350`.
 - Docelowy format publikacji: post 4:5 (w siatce Instagrama przycinany do kwadratu).
-- Stories, animacje i filmy to legacy — nie dodawaj nowych materialow w tym formacie.
-- Folder `typst/` i pliki Typst traktuj jako legacy; nie rozwijaj ich i nie tworz nowych materialow w Typst.
 
 ## 2. Parametry techniczne (domyslne)
 
 - Rozdzielczosc: `1080x1350`.
 - FPS: `30` (dla statycznego postu bez znaczenia, zostaje w specyfikacji Remotion).
 - Czas trwania: `durationInFrames: 1` — post jest jedna klatka.
-- Render: `npm run remotion:still` (PNG). Nie renderujemy MP4.
+- Render: `npm run remotion:still` (PNG).
 
 ## 3. Gdzie i jak dodawac nowe materialy
 
@@ -58,7 +56,7 @@ Ten dokument definiuje standard tworzenia nowych materialow na Instagram dla Kol
 
 ### 3c. Zdjecia (opcjonalne)
 
-- Nie kazdy material musi miec zdjecia — prosty post/story tekstowy jest OK.
+- Nie kazdy material musi miec zdjecia — prosty post tekstowy jest OK.
 - Jesli material korzysta ze zdjec, trzymaj je w `assets/meetings/<rrrr-mm-dd>/`.
 - W komponentach ze zdjeciami pole `slides[].imageSrc` moze byc opcjonalne: brak wartosci renderuje placeholder, wiec material kompiluje sie i renderuje przed dodaniem zdjec.
 - Po dodaniu zdjec zaimportuj je w pliku `.post.ts` i przypisz do `slides[].imageSrc`; nie zostawiaj placeholderow w finalnym materiale bez powodu.
@@ -73,7 +71,6 @@ Ten dokument definiuje standard tworzenia nowych materialow na Instagram dla Kol
 - Dla postow uzywaj prefiksu `post-`, np. `post-copernicana-2026-04-10.component.tsx`, `post-meeting-2026-04-17.post.ts`.
 - Trzymaj schemat: `<typ>-<temat>-<rrrr-mm-dd>.<rola>.ts(x)`, gdzie rola to np. `component`, `post`, `data`, `opis`.
 - Dla postow preferuj role `component` + `post` (+ `opis` dla opisu); komponent bierz z `PostSpotkanieBaseTemplate`.
-- Stories (`story-*`, `*.story.ts`) sa legacy — nie dodawaj nowych; zostaje tylko szablon `src/posts/story-base/`.
 - Identyfikator kompozycji Remotion powinien odzwierciedlac nazwe i date, np. `PostCopernicana-2026-04-10`;
   domyslny szablon to `PostSpotkanieBase`.
 
@@ -103,13 +100,7 @@ Ten dokument definiuje standard tworzenia nowych materialow na Instagram dla Kol
 - Krotkie frazy, malo tekstu, wysoka czytelnosc na malym ekranie.
 - Jezyk: polski, styl bezposredni.
 
-## 6. Animacje i ruch (legacy)
-
-- Nowych materialow nie animujemy — post to jedna klatka PNG.
-- Jedyny pozostawiony material story to szablon bazowy `src/posts/story-base/story-base.component.tsx`
-  (niezarejestrowany w `postRegistry`); trzymamy go jako punkt wyjscia, gdyby kiedys bylo potrzebne story.
-
-## 7. Assety i branding
+## 6. Assety i branding
 
 - Korzystaj z logo z `assets/`:
   - `logoKNI-text-accent.svg`
@@ -124,7 +115,7 @@ Ten dokument definiuje standard tworzenia nowych materialow na Instagram dla Kol
   Nazw czcionek systemowych (`Segoe UI`, `Trebuchet MS`) nie wpisuj w komponentach —
   minimalny kontener Linux ich nie ma i render wychodzi inny niz lokalnie.
 
-## 8. Definicja "done"
+## 7. Definicja "done"
 
 Zadanie uznaj za zakonczone, gdy:
 
@@ -133,7 +124,7 @@ Zadanie uznaj za zakonczone, gdy:
 3. Material jest czytelny na ekranie telefonu (hierarchia + kontrast).
 4. Render dziala dla nowej kompozycji: `npm run remotion:still` albo `npx remotion still src/index.ts <ID> out/<nazwa>.png --frame=0`.
 
-## 8a. Szybkie polecenia
+## 7a. Szybkie polecenia
 
 ```bash
 npm run remotion:studio            # podglad w Remotion Studio
@@ -144,12 +135,11 @@ npm run serve                      # generator w przegladarce
 ```
 
 
-## 9. Czego nie robic
+## 8. Czego nie robic
 
-- Nie wracaj do workflow Typst przy nowych materialach.
-- Nie dodawaj animacji, MP4 ani nowych stories — repo robi statyczne posty.
+- Repo robi statyczne posty — material to jedna klatka PNG (`durationInFrames: 1`).
 - Nie zmieniaj globalnie stylu calego repo bez potrzeby.
-- Nie usuwaj istniejacych plikow legacy bez wyraznej prozby.
+- Nie usuwaj istniejacych kompozycji i materialow bez wyraznej prozby.
 - Nie wpisuj nazw czcionek systemowych w komponentach — uzywaj `KNI_FONT_FAMILY`.
 
 

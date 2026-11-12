@@ -9,8 +9,7 @@ node_modules
 out
 .remotion
 
-# materialy zrodlowe i legacy - nie sa potrzebne w obrazie
-typst
+# materialy zrodlowe - nie sa potrzebne w obrazie
 *.pdf
 *.png
 *.jpg

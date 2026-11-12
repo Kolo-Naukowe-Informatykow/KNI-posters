@@ -1,8 +1,7 @@
 # KNI posters
 
 Repo generuje statyczne posty na Instagram (1080x1350) w Remotion (React + TypeScript).
-Nie robimy tu juz filmow ani animacji — materialy to pojedyncze klatki PNG.
-Folder `typst/` to legacy i nie rozwijamy go.
+Material to jedna klatka PNG.
 
 ![Cztery szablony postow](docs/screenshots/posty.png)
 
@@ -191,8 +190,6 @@ Pola formularza:
   i **Najblizszy poniedzialek** ustawiaja date ponownie. Pod polem widac tekst,
   ktory pojawi sie na plakacie, np. `10 listopada 2026`.
 - reszta to teksty postu; puste pole usuwa dany tekst.
-
-Formularz pokazuje tylko kompozycje postow; stories zostaja w repo jako archiwum.
 
 Uruchomienie lokalne:
 

@@ -7,8 +7,7 @@ description: "Uzyj przy tworzeniu i edycji statycznych postow Instagram KNI w Re
 
 ## Zakres
 
-Ta instrukcja dotyczy tylko statycznych postow (1080x1350) tworzonych w Remotion.
-Stories, animacje i foldery `typst/` sa legacy — nie rozwijaj ich.
+Ta instrukcja dotyczy statycznych postow (1080x1350) tworzonych w Remotion.
 
 ## Checklist implementacyjny
 
@@ -55,7 +54,6 @@ npx remotion still src/index.ts <ID> out/<nazwa>.png --frame=0
 
 - Kazdy nowy plik materialu zawiera date publikacji `rrrr-mm-dd` (wyjatek: wspolny szablon).
 - Posty: `post-<temat>-<rrrr-mm-dd>.<rola>.ts(x)`, role `component`, `post`, `opis`.
-- Stories (`story-*`) sa legacy; zostaje tylko szablon `src/posts/story-base/`.
 
 ## Zasady wizualne
 

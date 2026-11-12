@@ -24,23 +24,7 @@ export abstract class InstagramCompositionDefinition<TProps extends Record<strin
   /** Gotowy do wklejenia opis (caption) publikowany razem z materialem. */
   public readonly caption?: string;
 
-  public readonly spec: InstagramCompositionSpec = {
-    width: 1080,
-    height: 1920,
-    fps: 30,
-    durationInFrames: 240
-  };
-}
-
-export abstract class InstagramStoryDefinition<TProps extends Record<string, unknown>> extends InstagramCompositionDefinition<TProps> {
-  public readonly format = "story" as const;
-
-  public readonly spec: InstagramCompositionSpec = {
-    width: 1080,
-    height: 1920,
-    fps: 30,
-    durationInFrames: 240
-  };
+  public abstract readonly spec: InstagramCompositionSpec;
 }
 
 export abstract class InstagramPostDefinition<TProps extends Record<string, unknown>> extends InstagramCompositionDefinition<TProps> {
