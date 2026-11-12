@@ -1,11 +1,11 @@
 # KNI posters
 
 Repo generuje statyczne posty na Instagram (1080x1350) w Remotion (React + TypeScript).
-Material to jedna klatka PNG.
+Materiał to jedna klatka PNG.
 
-![Cztery szablony postow](docs/screenshots/posty.png)
+![Cztery szablony postów](docs/screenshots/posty.png)
 
-Szablony spotkan sekcji: spotkanie ogolne, sekcja robotyki, gamedev i Redflag.
+Szablony spotkań sekcji: spotkanie ogólne, sekcja robotyki, gamedev i Redflag.
 
 ## Wymagania
 
@@ -19,19 +19,19 @@ npm install
 
 ## Remotion
 
-Uruchomienie podgladu (Studio):
+Uruchomienie podglądu (Studio):
 
 ```bash
 npm run remotion:studio
 ```
 
-Lista dostepnych kompozycji:
+Lista dostępnych kompozycji:
 
 ```bash
 npm run remotion:compositions
 ```
 
-Render domyslnego szablonu postu (`PostSpotkanieBase`) do PNG:
+Render domyślnego szablonu postu (`PostSpotkanieBase`) do PNG:
 
 ```bash
 npm run remotion:still
@@ -39,56 +39,56 @@ npm run remotion:still
 
 ### Render dowolnej kompozycji
 
-Kazda pozycja z `src/posts/registry.ts` jest kompozycja Remotion. Renderuj ja, podajac jej `id`:
+Każda pozycja z `src/posts/registry.ts` jest kompozycją Remotion. Renderuj ją, podając jej `id`:
 
 ```bash
 npx remotion still src/index.ts <ID> out/<nazwa>.png --frame=0
 ```
 
-Przyklad gotowego skryptu:
+Przykład gotowego skryptu:
 
 ```bash
 npm run remotion:still
 ```
 
-Kompozycje postow maja `durationInFrames: 1`, wiec kazda klatka wyglada tak samo — `--frame` nie ma znaczenia.
+Kompozycje postów mają `durationInFrames: 1`, więc każda klatka wygląda tak samo — `--frame` nie ma znaczenia.
 
-## Struktura materialu
+## Struktura materiału
 
-Kazdy material to trzy czesci:
+Każdy materiał to trzy części:
 
-- komponent postu (wspolny `PostSpotkanieBaseTemplate`) i jego propsy,
+- komponent postu (wspólny `PostSpotkanieBaseTemplate`) i jego propsy,
 - `src/posts/<temat>/<typ>-<temat>-<rrrr-mm-dd>.post.ts` — definicja kompozycji (`id`, `spec`, `defaultProps`, opcjonalnie `caption`),
 - wpis w `src/posts/registry.ts` (`postRegistry`).
 
-`src/Root.tsx` automatycznie mapuje `compositionRegistry` na `<Composition />` — nie dodawaj tam rekordow recznie.
+`src/Root.tsx` automatycznie mapuje `compositionRegistry` na `<Composition />` — nie dodawaj tam rekordów ręcznie.
 
-Nowe posty rob na szablonie `PostSpotkanieBase`
+Nowe posty rób na szablonie `PostSpotkanieBase`
 (`src/posts/post-spotkanie-base/post-spotkanie-base-template.component.tsx`):
 wystarczy nowa definicja z innym `id`, tekstami, `dateISO`, `shapeIndex` i `seed`. Daty nie wpisujemy
-recznie — pole `dateISO` (`RRRR-MM-DD`) jest formatowane na tekst, np. `2026-10-03` -> `3 października 2026`.
+ręcznie — pole `dateISO` (`RRRR-MM-DD`) jest formatowane na tekst, np. `2026-10-03` -> `3 października 2026`.
 `shapeIndex` (0-8) wybiera kafelek układu, a `seed` — które tło (ten sam seed = ten sam układ słoneczny).
 
 ## Opis (caption) do posta
 
 Opis publikowany razem z postem trzymamy w polu `caption` w pliku `.post.ts`.
-Dodatkowo zrzut do wklejenia umieszczamy w pliku `<...>.opis.md` obok komponentu.
-Dzieki temu kod i tresc nie rozjezdzaja sie.
+Dodatkowo wersję do wklejenia umieszczamy w pliku `<...>.opis.md` obok komponentu.
+Dzięki temu kod i treść nie rozjeżdżają się.
 
-## Zdjecia (opcjonalne)
+## Zdjęcia (opcjonalne)
 
-Nie kazdy material musi miec zdjecia — prosty post tekstowy jest OK
+Nie każdy materiał musi mieć zdjęcia — prosty post tekstowy jest OK
 (np. `PostSpotkanieBase`).
 
-Materialy ze zdjeciami:
+Materiały ze zdjęciami:
 
-- zdjecia wrzucamy do `assets/meetings/<rrrr-mm-dd>/` i importujemy w pliku `.post.ts`,
-- `slides[].imageSrc` moze byc opcjonalne — brak wartosci = czytelny placeholder, wiec material renderuje sie przed dodaniem zdjec.
+- zdjęcia wrzucamy do `assets/meetings/<rrrr-mm-dd>/` i importujemy w pliku `.post.ts`,
+- `slides[].imageSrc` może być opcjonalne — brak wartości = czytelny placeholder, więc materiał renderuje się przed dodaniem zdjęć.
 
-## Wspolna stylistyka postow
+## Wspólna stylistyka postów
 
-Kazdy post o spotkaniu ma ten sam uklad tekstu (logo, duza godzina, naglowek, data,
-temat, miejsce, stopka) i to samo, ciagle tlo rozpisane na mozaike 3x3:
+Każdy post o spotkaniu ma ten sam układ tekstu (logo, duża godzina, nagłówek, data,
+temat, miejsce, stopka) i to samo, ciągłe tło rozpisane na mozaikę 3x3:
 
 - `src/components/backgrounds/SolarSystemBackground.tsx` rysuje **jeden globalny obraz**:
   ciemny gradient, gwiazdy i proceduralny układ słoneczny (słońce + orbity + planety + pas
@@ -131,18 +131,18 @@ tekstowe. `PostSpotkanieBase` jest ukryty w generatorze — zostaje jako szablon
 
 ## Czcionki
 
-Czcionki sa czescia repo (`public/fonts/`) i wczytuje je `src/core/fonts/kniFonts.ts`.
-Dzieki temu render wyglada identycznie lokalnie i w kontenerze — minimalny obraz
+Czcionki są częścią repo (`public/fonts/`) i wczytuje je `src/core/fonts/kniFonts.ts`.
+Dzięki temu render wygląda identycznie lokalnie i w kontenerze — minimalny obraz
 Linux nie ma czcionek Segoe UI ani Trebuchet MS.
 
 - `public/fonts/selawik-*.woff2` — Selawik (SIL OFL 1.1, licencja w `public/fonts/LICENSE.txt`),
-  metrycznie zgodny z Segoe UI, wiec uklad i zawijanie tekstu nie zmieniaja sie.
-- Komponenty ustawiaja `fontFamily: KNI_FONT_FAMILY`; nazw czcionek systemowych nie wpisujemy.
-- `delayRender` w `kniFonts.ts` wstrzymuje render, az pliki sie wczytaja (brak cichego
-  zejscia na czcionke zapasowa).
-- Nowy katalog `public/` jest kopiowany do obrazu w `Dockerfile` (`COPY public ./public`).
+  metrycznie zgodny z Segoe UI, więc układ i zawijanie tekstu nie zmieniają się.
+- Komponenty ustawiają `fontFamily: KNI_FONT_FAMILY`; nazw czcionek systemowych nie wpisujemy.
+- `delayRender` w `kniFonts.ts` wstrzymuje render, aż pliki się wczytają (brak cichego
+  zejścia na czcionkę zapasową).
+- Katalog `public/` jest kopiowany do obrazu w `Dockerfile` (`COPY public ./public`).
 
-## Glowne pliki Remotion
+## Główne pliki Remotion
 
 - `src/index.ts`
 - `src/Root.tsx`
@@ -164,15 +164,15 @@ Linux nie ma czcionek Segoe UI ani Trebuchet MS.
 - `src/posts/registry.ts`
 - `remotion.config.ts`
 
-## Web UI (generator postow)
+## Web UI (generator postów)
 
-`server/` to mini-aplikacja (Node, bez zaleznosci poza Remotion) wystawiajaca formularz:
-wybierasz szablon postu, nadpisujesz teksty i renderujesz podglad (PNG 0,4x) albo PNG
-w pelnej rozdzielczosci. Zadania leca pojedynczo w kolejce, wyniki laduja w `out/`
-(w kontenerze na wolumenie), historia w `out/jobs.json`, a ostatni kafelek ukladu i historia
-seedow leza w `out/ui-state.json`.
+`server/` to mini-aplikacja (Node, bez zależności poza Remotion) wystawiająca formularz:
+wybierasz szablon postu, nadpisujesz teksty i renderujesz podgląd (PNG 0,4x) albo PNG
+w pełnej rozdzielczości. Zadania lecą pojedynczo w kolejce, wyniki lądują w `out/`
+(w kontenerze na wolumenie), historia w `out/jobs.json`, a ostatni kafelek układu i historia
+seedów leżą w `out/ui-state.json`.
 
-![Generator postow](docs/screenshots/generator.png)
+![Generator postów](docs/screenshots/generator.png)
 
 Pola formularza:
 
@@ -185,10 +185,10 @@ Pola formularza:
 - **Ziarno tła** — liczba, z której generator buduje układ słoneczny. Przycisk **Nowe tło**
   losuje nowy seed (po 9 kafelkach masz świeże tło), a **Wstecz** wraca do poprzedniego.
   Historia seedów jest zapisana w `out/ui-state.json`, więc działa też po restarcie.
-- **Data spotkania** — kalendarz (`input[type=date]`). Domyslnie ustawia sie najblizszy
-  wtorek (dzisiaj, jesli dzisiaj jest wtorek), a przyciski **Najblizszy wtorek**
-  i **Najblizszy poniedzialek** ustawiaja date ponownie. Pod polem widac tekst,
-  ktory pojawi sie na plakacie, np. `10 listopada 2026`.
+- **Data spotkania** — kalendarz (`input[type=date]`). Domyślnie ustawia się najbliższy
+  wtorek (dzisiaj, jeśli dzisiaj jest wtorek), a przyciski **Najbliższy wtorek**
+  i **Najbliższy poniedziałek** ustawiają datę ponownie. Pod polem widać tekst,
+  który pojawi się na plakacie, np. `10 listopada 2026`.
 - reszta to teksty postu; puste pole usuwa dany tekst.
 
 Uruchomienie lokalne:
@@ -199,52 +199,48 @@ npm run browser:ensure   # pobiera Chrome Headless Shell do node_modules/.remoti
 npm run serve            # http://127.0.0.1:8083
 ```
 
-Zmienne srodowiskowe: `PORT` (domyslnie 8083), `HOST` (0.0.0.0), `OUT_DIR`
-(domyslnie `./out`), `REMOTION_CONCURRENCY` (domyslnie auto = liczba rdzeni).
+Zmienne środowiskowe: `PORT` (domyślnie 8083), `HOST` (0.0.0.0), `OUT_DIR`
+(domyślnie `./out`), `REMOTION_CONCURRENCY` (domyślnie auto = liczba rdzeni).
 
-API: `GET /api/health`, `GET /api/compositions` (zwraca tez `shapeIndexSuggestion` i stan seedow),
+API: `GET /api/health`, `GET /api/compositions` (zwraca też `shapeIndexSuggestion` i stan seedów),
 `GET|POST /api/seeds` (`roll` / `back` / `select`), `GET|POST /api/jobs`, `GET /api/jobs/<id>`,
-`GET /api/jobs/<id>/log`, `GET /api/jobs/<id>/file`, `DELETE /api/jobs/<id>` (anuluj/usun).
+`GET /api/jobs/<id>/log`, `GET /api/jobs/<id>/file`, `DELETE /api/jobs/<id>` (anuluj/usuń).
 
 ### Docker (opcjonalnie)
 
-Repo ma `Dockerfile` (Node 22 + Chrome Headless Shell), wiec generator uruchomisz tez poza Windows:
+Repo ma `Dockerfile` (Node 22 + Chrome Headless Shell), więc generator uruchomisz też poza Windows:
 
 ```bash
 docker build -t kni-posters .
 docker run --rm -p 8083:8083 -v "$PWD/out:/app/out" kni-posters
 ```
 
-Kontener nasluchuje na porcie `8083` i nie potrzebuje zewnetrznych uslug — wystaw go tak,
-jak pasuje do Twojej infrastruktury (reverse proxy, VPN, siec lokalna). Wzorcowy
+Kontener nasłuchuje na porcie `8083` i nie potrzebuje zewnętrznych usług — wystaw go tak,
+jak pasuje do Twojej infrastruktury (reverse proxy, VPN, sieć lokalna). Wzorcowy
 `docker-compose.yml` jest w `deploy/docker-compose.example.yml`.
 
 ### Automatyczny deploy (GitHub Actions)
 
-`.github/workflows/deploy.yml` po pushu na `main` uruchamia na serwerze skrypt wdrozeniowy
+`.github/workflows/deploy.yml` po pushu na `main` uruchamia na serwerze skrypt wdrożeniowy
 (`git fetch` + `docker build` + `docker compose up`). Wymagane sekrety w repo
 (Settings -> Secrets and variables -> Actions):
 
 - `DEPLOY_HOST` — adres serwera,
-- `DEPLOY_USER` — uzytkownik, ktory wykonuje deploy,
-- `DEPLOY_SSH_KEY` — klucz prywatny SSH tego uzytkownika,
+- `DEPLOY_USER` — użytkownik, który wykonuje deploy,
+- `DEPLOY_SSH_KEY` — klucz prywatny SSH tego użytkownika,
 - `TS_OAUTH_CLIENT_ID` / `TS_OAUTH_SECRET` — klient OAuth Tailscale z tagiem `tag:ci`
-  (runner wchodzi do tailnetu, jesli serwer nie jest osiagalny publicznie).
+  (runner wchodzi do tailnetu, jeśli serwer nie jest osiągalny publicznie).
 
-Skrypt `/srv/kni-posters/deploy.sh` lezy na serwerze i nie jest czescia repo.
-Brak sekretow = czerwony run, wiec zielony run zawsze znaczy "wdrozono".
+Skrypt `/srv/kni-posters/deploy.sh` leży na serwerze i nie jest częścią repo.
+Brak sekretów = czerwony run, więc zielony run zawsze znaczy „wdrożono”.
 
 ## Licencja
 
 Kod (Remotion, serwer, skrypty) jest na licencji MIT — patrz [LICENSE](LICENSE).
-Mozesz go kopiowac, rozwijac i uzywac we wlasnych materialach.
+Możesz go kopiować, rozwijać i używać we własnych materiałach.
 
-Znaki i assety KNI nie sa objete MIT: logo (`assets/logoKNI*.svg`, `assets/logoGamedev*.svg`),
-ikony z `src/core/icons/`, zdjecia (`assets/meetings/`, `assets/TFNiS2026/`) i gotowe
-materialy zostaja wlasnoscia Kola Naukowego Informatykow i mozna ich uzywac tylko
-w materialach KNI. Czcionka Selawik ma wlasna licencje (SIL OFL 1.1) w `public/fonts/LICENSE.txt`,
+Znaki i assety KNI nie są objęte MIT: logo (`assets/logoKNI*.svg`, `assets/logoGamedev*.svg`),
+ikony z `src/core/icons/`, zdjęcia (`assets/meetings/`, `assets/TFNiS2026/`) i gotowe
+materiały zostają własnością Koła Naukowego Informatyków i można ich używać tylko
+w materiałach KNI. Czcionka Selawik ma własną licencję (SIL OFL 1.1) w `public/fonts/LICENSE.txt`,
 a paczka Phosphor jest na MIT (licencja w pakiecie `@phosphor-icons/core`).
-
-
-
-
