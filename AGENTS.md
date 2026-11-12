@@ -122,7 +122,7 @@ Ten dokument definiuje standard tworzenia nowych materialow na Instagram dla Kol
 - Czcionki trzymaj w `public/fonts/` i ustawiaj przez `KNI_FONT_FAMILY`
   z `src/core/fonts/kniFonts.ts` (Selawik, metrycznie zgodny z Segoe UI).
   Nazw czcionek systemowych (`Segoe UI`, `Trebuchet MS`) nie wpisuj w komponentach —
-  kontener na serwerze ich nie ma i render wychodzi inny niz lokalnie.
+  minimalny kontener Linux ich nie ma i render wychodzi inny niz lokalnie.
 
 ## 8. Definicja "done"
 

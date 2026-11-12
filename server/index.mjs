@@ -15,7 +15,8 @@
  *   GET    /api/jobs/<id>/file   plik wynikowy
  *   DELETE /api/jobs/<id>        anuluj (w trakcie) / usun zadanie i plik
  *
- * Kontener wystawia port tylko na 127.0.0.1 hosta, na swiat idzie przez Tailscale Serve.
+ * Serwer nie ma wlasnej autoryzacji — wystawiaj go tylko w zaufanej sieci
+ * (VPN, siec lokalna) albo za reverse proxy z logowaniem.
  */
 import fs from "node:fs";
 import http from "node:http";

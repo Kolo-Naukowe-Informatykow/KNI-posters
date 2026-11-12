@@ -1,13 +1,15 @@
-# Wzorzec /srv/kni-posters/docker-compose.yml na serwer (kopia robocza - zrodlo prawdy
-# jest na serwerze, w /srv/kni-posters/docker-compose.yml).
+# Wzorcowy docker-compose.yml dla generatora postow.
+# Skopiuj do docker-compose.yml (obok klonu repo), uzupelnij .env i uruchom:
+#   docker compose up -d --build
 #
-# Port 8083 na hoscie tylko na 127.0.0.1; na swiat wystawia Tailscale Serve:
-#   tailscale serve --bg --https=8453 http://127.0.0.1:8083
+# Jesli trzymasz compose w osobnym katalogu, a repo lezy w podkatalogu (np. ./app),
+# ustaw build.context na ten podkatalog. Port publikuj tylko tam, gdzie ma byc dostepny
+# (np. "127.0.0.1:8083:8083" za reverse proxy).
 
 services:
   kni-posters:
     build:
-      context: ./app
+      context: .
       dockerfile: Dockerfile
     image: kni-posters:local
     container_name: kni-posters
@@ -18,10 +20,10 @@ services:
       - TZ=Europe/Warsaw
       - PORT=8083
       - OUT_DIR=/app/out
-      # 4 rdzenie w sumie (CPU) - zostawiamy zapas dla inne serwisy
+      # ile renderow naraz - zostaw zapas CPU/RAM dla reszty hosta
       - REMOTION_CONCURRENCY=2
     ports:
-      - "127.0.0.1:8083:8083"
+      - "8083:8083"
     volumes:
       # wyniki renderow, cache bundla i historia zadan (jobs.json)
       - ./out:/app/out
@@ -37,7 +39,7 @@ services:
         - CMD
         - node
         - -e
-        - "fetch('http://127.0.0.1:8083/api/health').then((r)=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+        - "fetch('http://127.0.0.1:'+(process.env.PORT||8083)+'/api/health').then((r)=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
       interval: 30s
       timeout: 5s
       retries: 3

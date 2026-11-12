@@ -1,18 +1,16 @@
-name: Deploy na serwer
+name: Deploy
 
-# Auto-deploy KNI posters: po pushu na main runner wchodzi do tailnetu
-# (Tailscale OAuth, tag:ci) i uruchamia /srv/kni-posters/deploy.sh na serwerze
-# (git fetch + docker build + up).
+# Auto-deploy KNI posters: po pushu na main runner laczy sie z serwerem przez SSH
+# i uruchamia /srv/kni-posters/deploy.sh (git fetch + docker build + up).
 #
 # Wymagane sekrety w repo (Settings -> Secrets and variables -> Actions):
+#   DEPLOY_HOST      - adres serwera (IP w tailnecie lub hostname)
+#   DEPLOY_USER      - uzytkownik deployujacy
+#   DEPLOY_SSH_KEY   - klucz prywatny SSH
 #   TS_OAUTH_CLIENT_ID / TS_OAUTH_SECRET - klient OAuth Tailscale z tagiem tag:ci
-#   DEPLOY_HOST                          - adres serwera w tailnecie (HOST)
-#   DEPLOY_USER                          - deploy
-#   DEPLOY_SSH_KEY                       - klucz prywatny (przydatny tylko przy zwyklym sshd)
+#                    (runner wchodzi do tailnetu, jesli serwer nie jest publiczny)
 #
-# Uwaga: na serwerze dziala Tailscale SSH, wiec logowanie idzie po tozsamosci
-# wezla (tag:ci), a deploy.sh jest root:root 0700 -> uruchamiamy przez waskie
-# sudo (sudoers: /etc/sudoers.d/deploy-sh).
+# Jesli serwer nie uzywa Tailscale, usun krok z akcja tailscale/ i sekrety TS_*.
 on:
   push:
     branches: [main]

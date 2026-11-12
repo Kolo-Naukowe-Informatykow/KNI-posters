@@ -1,7 +1,7 @@
 {
   "name": "kni-posters",
   "version": "1.0.0",
-  "description": "KNI posters and video assets built with Typst and Remotion",
+  "description": "Statyczne posty na Instagram KNI (1080x1350) w Remotion",
   "private": true,
   "scripts": {
     "remotion:studio": "remotion studio src/index.ts",
@@ -17,8 +17,8 @@
     "url": "git+https://github.com/6ajmon/KNI-posters.git"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "Koło Naukowe Informatyków",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/6ajmon/KNI-posters/issues"
   },

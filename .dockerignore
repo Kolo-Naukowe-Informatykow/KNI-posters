@@ -5,7 +5,7 @@ node_modules
 .env.*
 *.log
 
-# wyniki i cache renderu (na serwerze to wolumen /srv/kni-posters/out)
+# wyniki i cache renderu (w kontenerze to wolumen)
 out
 .remotion
 

@@ -4,6 +4,10 @@ Repo generuje statyczne posty na Instagram (1080x1350) w Remotion (React + TypeS
 Nie robimy tu juz filmow ani animacji — materialy to pojedyncze klatki PNG.
 Folder `typst/` to legacy i nie rozwijamy go.
 
+![Cztery szablony postow](docs/screenshots/posty.png)
+
+Szablony spotkan sekcji: spotkanie ogolne, sekcja robotyki, gamedev i Redflag.
+
 ## Wymagania
 
 - Node.js LTS (npm)
@@ -129,7 +133,7 @@ tekstowe. `PostSpotkanieBase` jest ukryty w generatorze — zostaje jako szablon
 ## Czcionki
 
 Czcionki sa czescia repo (`public/fonts/`) i wczytuje je `src/core/fonts/kniFonts.ts`.
-Dzieki temu render wyglada identycznie lokalnie (Windows) i na serwerze — kontener
+Dzieki temu render wyglada identycznie lokalnie i w kontenerze — minimalny obraz
 Linux nie ma czcionek Segoe UI ani Trebuchet MS.
 
 - `public/fonts/selawik-*.woff2` — Selawik (SIL OFL 1.1, licencja w `public/fonts/LICENSE.txt`),
@@ -169,6 +173,8 @@ w pelnej rozdzielczosci. Zadania leca pojedynczo w kolejce, wyniki laduja w `out
 (w kontenerze na wolumenie), historia w `out/jobs.json`, a ostatni kafelek ukladu i historia
 seedow leza w `out/ui-state.json`.
 
+![Generator postow](docs/screenshots/generator.png)
+
 Pola formularza:
 
 - **Kafelek układu** — siatka 3x3. 9 postów tworzy jeden obraz w siatce Instagrama; generator
@@ -203,13 +209,44 @@ API: `GET /api/health`, `GET /api/compositions` (zwraca tez `shapeIndexSuggestio
 `GET|POST /api/seeds` (`roll` / `back` / `select`), `GET|POST /api/jobs`, `GET /api/jobs/<id>`,
 `GET /api/jobs/<id>/log`, `GET /api/jobs/<id>/file`, `DELETE /api/jobs/<id>` (anuluj/usun).
 
-### Deploy na serwer
+### Docker (opcjonalnie)
 
-Wdrozenie: `/srv/kni-posters` (compose, `.env`, `deploy.sh`, `out/`) + `app/` z klonem
-repo; kontener `kni-posters` slucha na `127.0.0.1:8083`, na swiat idzie przez Tailscale
-Serve `:8453`. Push na `main` uruchamia `.github/workflows/deploy.yml`. Wzorzec compose:
-`deploy/docker-compose.example.yml`. Dokumentacja serwera:
-https://github.com/6ajmon/docs (`docs/02-stacki-docker.md`).
+Repo ma `Dockerfile` (Node 22 + Chrome Headless Shell), wiec generator uruchomisz tez poza Windows:
+
+```bash
+docker build -t kni-posters .
+docker run --rm -p 8083:8083 -v "$PWD/out:/app/out" kni-posters
+```
+
+Kontener nasluchuje na porcie `8083` i nie potrzebuje zewnetrznych uslug — wystaw go tak,
+jak pasuje do Twojej infrastruktury (reverse proxy, VPN, siec lokalna). Wzorcowy
+`docker-compose.yml` jest w `deploy/docker-compose.example.yml`.
+
+### Automatyczny deploy (GitHub Actions)
+
+`.github/workflows/deploy.yml` po pushu na `main` uruchamia na serwerze skrypt wdrozeniowy
+(`git fetch` + `docker build` + `docker compose up`). Wymagane sekrety w repo
+(Settings -> Secrets and variables -> Actions):
+
+- `DEPLOY_HOST` — adres serwera,
+- `DEPLOY_USER` — uzytkownik, ktory wykonuje deploy,
+- `DEPLOY_SSH_KEY` — klucz prywatny SSH tego uzytkownika,
+- `TS_OAUTH_CLIENT_ID` / `TS_OAUTH_SECRET` — klient OAuth Tailscale z tagiem `tag:ci`
+  (runner wchodzi do tailnetu, jesli serwer nie jest osiagalny publicznie).
+
+Skrypt `/srv/kni-posters/deploy.sh` lezy na serwerze i nie jest czescia repo.
+Brak sekretow = czerwony run, wiec zielony run zawsze znaczy "wdrozono".
+
+## Licencja
+
+Kod (Remotion, serwer, skrypty) jest na licencji MIT — patrz [LICENSE](LICENSE).
+Mozesz go kopiowac, rozwijac i uzywac we wlasnych materialach.
+
+Znaki i assety KNI nie sa objete MIT: logo (`assets/logoKNI*.svg`, `assets/logoGamedev*.svg`),
+ikony z `src/core/icons/`, zdjecia (`assets/meetings/`, `assets/TFNiS2026/`) i gotowe
+materialy zostaja wlasnoscia Kola Naukowego Informatykow i mozna ich uzywac tylko
+w materialach KNI. Czcionka Selawik ma wlasna licencje (SIL OFL 1.1) w `public/fonts/LICENSE.txt`,
+a paczka Phosphor jest na MIT (licencja w pakiecie `@phosphor-icons/core`).
 
 
 

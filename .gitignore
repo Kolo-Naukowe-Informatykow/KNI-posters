@@ -20,3 +20,7 @@ pnpm-debug.log*
 
 !assets/TFNiS2026/
 !assets/TFNiS2026/**
+
+# zrzuty do README
+!docs/screenshots/
+!docs/screenshots/**

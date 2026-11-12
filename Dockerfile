@@ -1,6 +1,6 @@
 # Obraz produkcyjny: Remotion renderuje przez Chrome Headless Shell, a serwer UI
-# wystawia formularz (port 8083) - na swiat idzie przez Tailscale Serve.
-# Node 22 (bookworm) = ten sam major co na serwerze; pakiety Chromium z apt.
+# wystawia formularz na porcie 8083 — wystaw go za reverse proxy albo w zaufanej sieci.
+# Node 22 (bookworm) + pakiety Chromium z apt.
 
 FROM node:22-bookworm-slim AS deps
 WORKDIR /app
